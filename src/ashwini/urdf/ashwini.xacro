@@ -2,14 +2,14 @@
 
 <robot name="ashwini" xmlns:xacro="ashwini_description_xacro_namespace">
   <!-- Dummy root link without inertia -->
-  <link name="dummy_root">
-  </link>
+  <!-- <link name="dummy_root">
+  </link> -->
 
-  <joint name="dummy_root_to_base" type="fixed">
+  <!-- <joint name="dummy_root_to_base" type="fixed">
     <parent link="dummy_root"/>
     <child link="base_link"/>
     <origin xyz="0 0 0" rpy="0 0 0"/>
-  </joint>
+  </joint> -->
 
   <xacro:include filename="$(find ashwini)/urdf/ashwini.gazebo" />
 

@@ -2,13 +2,16 @@
 
 <launch>
 	<arg name="robot_name" default="ashwini"/>
-
+	
+	<!-- Launch other relevant files-->
 	<include file="$(find ashwini)/launch/robot_description.launch"/>
 	<include file="$(find ashwini)/launch/waypoint.launch"/>
 	<include file="$(find ashwini)/launch/slam_navigation.launch"/>
 
+	<!-- World File -->
 	<arg name="world_file" default="$(find ashwini)/worlds/empty.world"/>
 
+	<!-- Launch Gazebo World -->
 	<include file="$(find gazebo_ros)/launch/empty_world.launch">
 		<arg name="use_sim_time" value="true"/>
 		<arg name="verbose" value="false"/>
@@ -17,14 +20,22 @@
 		<arg name="world_name" value="$(arg world_file)"/>
 	</include>
 	
-	<node pkg="tf2_ros" type="static_transform_publisher" name="odom_to_dummy_root"
-      args="0 0 0 0 0 0 odom dummy_root " />
+	<!-- <node pkg="tf2_ros" type="static_transform_publisher" name="odom_to_dummy_root"
+      args="0 0 0 0 0 0 odom dummy_root " /> -->
 
+	<!-- Spawn My Robot -->
 	<node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
 		args="-urdf -param robot_description -model ashwini
 			  -x 0 -y 0 -z 0.23
 			  -R 0 -P 0 -Y 0"/>
 
+	<!--launch rviz-->
 	<node name="rviz" pkg="rviz" type="rviz" respawn="false"
 		  args="-d $(find ashwini)/default.rviz"/>
+
+	<!-- <node pkg="tf" type="tf_remap" name="tf_remap">
+		<remap from="/tf" to="/tf_filtered"/>
+	</node> -->
+
+
 </launch>
