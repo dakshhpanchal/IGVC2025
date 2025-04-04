@@ -24,7 +24,7 @@ class LaneDetector:
         height, width, _ = frame.shape
 
         # 1. Crop ROI (bottom quarter of image)
-        roi = frame[int(height * 0.6):, :]
+        roi = frame[int(height * 0.2):, :]
 
         # 2. Convert to HSV and threshold for white lanes
         hsv = cv2.cvtColor(roi, cv2.COLOR_BGR2HSV)
