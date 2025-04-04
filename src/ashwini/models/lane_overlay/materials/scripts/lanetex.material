@@ -1,0 +1,17 @@
+material lane_overlay/lanetex
+{
+  receive_shadows on
+  technique
+  {
+    pass
+    {
+      texture_unit
+      {
+        texture lane_image.png
+        filtering anisotropic
+        max_anisotropy 16
+      }
+    }
+  }
+}
+

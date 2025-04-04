@@ -29,8 +29,8 @@
       </link>
     </model>
 
-        <!-- Central obstacle cluster -->
-    <model name="obstacle_center">
+        Central obstacle cluster
+    <!-- <model name="obstacle_center">
       <static>true</static>
       <pose>2.0 0 0.25 0 0 0</pose>
       <link name="link">
@@ -53,10 +53,10 @@
           </material>
         </visual>
       </link>
-    </model>
+    </model> -->
 
     <!-- Left side obstacles -->
-    <model name="obstacle_left_1">
+    <!-- <model name="obstacle_left_1">
       <static>true</static>
       <pose>1.0 2 0.25 0 0 0</pose>
       <link name="link">
@@ -79,9 +79,9 @@
           </material>
         </visual>
       </link>
-    </model>
+    </model> -->
 
-    <model name="obstacle_left_2">
+    <!-- <model name="obstacle_left_2">
       <static>true</static>
       <pose>3.0 1.5 0.25 0 0 0</pose>
       <link name="link">
@@ -104,10 +104,10 @@
           </material>
         </visual>
       </link>
-    </model>
+    </model> -->
 
     <!-- Right side obstacles -->
-    <model name="obstacle_right_1">
+    <!-- <model name="obstacle_right_1">
       <static>true</static>
       <pose>1.5 -1.0 0.25 0 0 0</pose>
       <link name="link">
@@ -130,9 +130,9 @@
           </material>
         </visual>
       </link>
-    </model>
+    </model> -->
 
-    <model name="obstacle_right_2">
+    <!-- <model name="obstacle_right_2">
       <static>true</static>
       <pose>3.5 -1.3 0.25 0 0 0</pose>
       <link name="link">
@@ -155,10 +155,10 @@
           </material>
         </visual>
       </link>
-    </model>
+    </model> -->
 
     <!-- Narrow passage -->
-    <model name="obstacle_gate_1">
+    <!-- <model name="obstacle_gate_1">
       <static>true</static>
       <pose>5.0 0.5 0.25 0 0 0</pose>
       <link name="link">
@@ -181,9 +181,9 @@
           </material>
         </visual>
       </link>
-    </model>
+    </model> -->
 
-    <model name="obstacle_gate_2">
+    <!-- <model name="obstacle_gate_2">
       <static>true</static>
       <pose>5.0 -0.5 0.25 0 0 0</pose>
       <link name="link">
@@ -206,7 +206,7 @@
           </material>
         </visual>
       </link>
-    </model>
+    </model> -->
 
     <!-- Light source -->
     <include>
@@ -220,6 +220,5 @@
         <view_controller>orbit</view_controller>
       </camera>
     </gui>
-
   </world>
 </sdf>

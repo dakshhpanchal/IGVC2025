@@ -18,9 +18,13 @@
 	
 	<node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
 		args="-urdf -param robot_description -model ashwini
-			  -x 0 -y 0 -z 0.23
+			  -x 3 -y 1 -z 0.23
 			  -R 0 -P 0 -Y 0"/>
 
 	<node name="rviz" pkg="rviz" type="rviz" respawn="false"
-		  args="-d $(find ashwini)/default.rviz"/>
+		args="-d $(find ashwini)/default.rviz"/>
+
+	<node name="spawn_lane_overlay" pkg="gazebo_ros" type="spawn_model" output="screen"
+	args="-file $(find ashwini)/models/lane_overlay/model.sdf -sdf -model lane_overlay -x 0 -y 0 -z 0.01"/>
+	
 </launch>

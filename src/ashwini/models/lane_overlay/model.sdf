@@ -1,0 +1,32 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <model name="lane_overlay">
+    <static>true</static>
+    <link name="lane_plane_link">
+      <visual name="lane_plane_visual">
+        <geometry>
+          <plane>
+            <normal>0 0 1</normal>
+            <size>20 20</size>
+          </plane>
+        </geometry>
+        <material>
+          <script>
+            <uri>model://lane_overlay/materials/scripts</uri>
+            <uri>model://lane_overlay/materials/textures</uri>
+            <name>lane_overlay/lanetex</name>
+          </script>
+        </material>
+      </visual>
+      <collision name="lane_plane_collision">
+        <geometry>
+          <plane>
+            <normal>0 0 1</normal>
+            <size>20 20</size>
+          </plane>
+        </geometry>
+      </collision>
+    </link>
+  </model>
+</sdf>
+
