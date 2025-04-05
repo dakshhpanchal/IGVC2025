@@ -11,10 +11,8 @@ class WaypointNavigator:
         
         # List of waypoints (x, y, yaw_deg)
         self.waypoints = [
-            (5.0, 5.0, 0),
-            (-5.0, 5.0, 0),
-            (-5.0, -5.0, 0),
-            (5.0, -5.0, 0)
+            (18.0, 4.0, 0)
+            
         ]
         
         self.current_waypoint_index = 0
