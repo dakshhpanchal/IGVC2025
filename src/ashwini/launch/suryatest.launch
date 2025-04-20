@@ -1,0 +1,10 @@
+<launch>
+    <node pkg="rplidar_ros" type="rplidarNode" name="rplidarNode" output="screen">
+		<param name="serial_port" value="/dev/ttyUSB1"/>
+		<param name="serial_baudrate" value="256000"/>
+		<param name="frame_id" value="hokuyo"/>
+		<param name="angle_compensate" type="bool" value="true"/>
+    </node>
+    <node pkg="ashwini" type="move_smart.py" name="tralalero" output="screen"/>
+    <node pkg="ashwini" type="teleop.py" name="tungtungtungsahur" output="screen"/>
+</launch>

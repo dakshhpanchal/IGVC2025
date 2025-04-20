@@ -11,8 +11,8 @@ class LaneFollower:
         # Publisher to send velocity commands to the robot
         self.cmd_vel_pub = rospy.Publisher("/cmd_vel", Twist, queue_size=10)
         # Set parameters for controlling the robot
-        self.linear_speed = rospy.get_param("~linear_speed", 20)
-        self.angular_gain = rospy.get_param("~angular_gain", 5)
+        self.linear_speed = rospy.get_param("~linear_speed", 2)
+        self.angular_gain = rospy.get_param("~angular_gain", 0.005)
         self.current_error = 0.0
         rospy.loginfo("Lane Follower node started.")
 

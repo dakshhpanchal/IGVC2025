@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+    <!-- Remove camera_spawner node -->
+    
+    <!-- Common parameters -->
+    <arg name="robot_name" default="ashwini"/>
+    <arg name="world_file" default="$(find ashwini)/worlds/empty.world"/>
+    <arg name="paused" default="false"/>
+    <arg name="use_sim_time" default="true"/>
+    <arg name="gui" default="true"/>
+    <arg name="headless" default="false"/>
+    <arg name="debug" default="false"/>
+
+    <!-- 1. Load robot description (already includes RealSense in Xacro) -->
+    <include file="$(find ashwini)/launch/robot_description.launch"/>
+
+    <!-- 2. Start Gazebo -->
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name="world_name" value="$(arg world_file)"/>
+        <arg name="debug" value="$(arg debug)"/>
+        <arg name="gui" value="$(arg gui)"/>
+        <arg name="paused" value="$(arg paused)"/>
+        <arg name="use_sim_time" value="$(arg use_sim_time)"/>
+        <arg name="headless" value="$(arg headless)"/>
+    </include>
+
+    <!-- 3. Spawn main robot (with built-in camera from Xacro) -->
+    <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
+        args="-urdf -param robot_description -model $(arg robot_name)
+              -x 6 -y 4 -z 0.23
+              -R 0 -P 0 -Y 0"/>
+
+    <!-- 4. RViz -->
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find ashwini)/rviz/urdf.rviz" required="true" />
+
+    <!-- 5. Navigation -->
+    <include file="$(find ashwini)/launch/move_base.launch"/>
+    
+    <!-- 6. Lane overlay -->
+    <node name="spawn_lane_overlay" pkg="gazebo_ros" type="spawn_model" output="screen"
+          args="-file $(find ashwini)/models/lane_overlay/model.sdf -sdf -model lane_overlay -x 0 -y 0 -z 0.01"/>
+</launch>

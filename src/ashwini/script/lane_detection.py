@@ -10,7 +10,7 @@ class LaneDetector:
     def __init__(self):
         rospy.init_node('lane_detector', anonymous=True)
         self.bridge = CvBridge()
-        self.image_sub = rospy.Subscriber("/ashwini/camera/rgb/image_raw", Image, self.image_callback)
+        self.image_sub = rospy.Subscriber("/camera/depth/image_raw", Image, self.image_callback)
         self.offset_pub = rospy.Publisher("/lane_offset", Float32, queue_size=10)
         rospy.loginfo("Lane Detector initialized using ROI + Contour + Centroid method")
 

@@ -5,7 +5,6 @@
   <!-- Launch lane follower node -->
   <node pkg="ashwini" type="lane_follower.py" name="lane_follower" output="screen">
     <!-- You can adjust parameters here -->
-    <param name="linear_speed" value="0.2" />
-    <param name="angular_gain" value="0.005" />
+
   </node>
 </launch>
