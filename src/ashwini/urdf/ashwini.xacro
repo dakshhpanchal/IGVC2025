@@ -2,15 +2,20 @@
 
 <robot name="ashwini" xmlns:xacro="ashwini_description_xacro_namespace">
   <!-- Dummy root link without inertia -->
+  <!-- base_footprint is a virtual frame at the ground contact point -->
+  <link name="base_footprint" />
 
-  <xacro:include filename="$(find ashwini)/urdf/ashwini.gazebo" />
+  <joint name="base_footprint_joint" type="fixed">
+    <parent link="base_footprint" />
+    <child link="base_link" />
+    <!-- Adjust Z as needed (e.g., half the wheel radius or chassis height) -->
+    <origin xyz="0 0 0.216" rpy="0 0 0" />
+  </joint>
 
-  <xacro:property name="pi" value="3.1415926535897931" />
 
-
+  <!-- <xacro:include filename="$(find ashwini)/urdf/ashwini.gazebo" /> -->
   <xacro:property name="camera_mass" value="0.1"/>
 	<xacro:property name="hokoyu_mass" value="1e-5"/>
-
 
   <xacro:property name="base_link_length_width_height" value="0.650 0.381 0.132" />
   <xacro:property name="base_link_length" value="0.650" />
@@ -259,30 +264,34 @@
   </xacro:continuous_joint>
 
   <link name="camera">
-		<inertial>
-			<mass value="${camera_mass}"/>
-			<origin xyz="0 0 0" rpy="0 0 0"/>
-			<inertia
-		        ixx="1e-6" ixy="0.0" ixz="0.0"
-		        iyy="1e-6" iyz="0.0"
-		        izz="1e-6"
-		      />
-		</inertial>
+    <inertial>
+      <mass value="${camera_mass}"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia
+        ixx="1e-6" ixy="0.0" ixz="0.0"
+        iyy="1e-6" iyz="0.0"
+        izz="1e-6"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <box size="0.05 0.05 0.05"/>
+      </geometry>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.05 0.05 0.05"/>
+      </geometry>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </collision>
+  </link>
 
-		<visual>
-			<origin xyz="0 0 0" rpy="0 0 0"/>
-			<geometry>
-				<box size="0.05 0.05 0.05"/>
-			</geometry>
-		</visual>
-
-		<collision>
-			<origin xyz="0 0 0" rpy="0 0 0"/>
-			<geometry>
-				<box size="0.05 0.05 0.05"/>
-			</geometry>
-		</collision>
-	</link>
+  <joint name="camera_joint" type="fixed">
+		<origin xyz="0.006 -0.2 0.4" rpy="0 0.2 0" />
+		<parent link="base_link"/>
+		<child link="camera" />
+		<axis xyz="0 1 0"/>
+	</joint>
 
   <link name="hokuyo">
 		<inertial>
@@ -311,16 +320,10 @@
 		</collision>
 	</link>
 
-  <joint name="camera_joint" type="fixed">
-		<origin xyz="0.006 -0.2 0.4" rpy="0 0.2 0" />
-		<parent link="base_link"/>
-		<child link="camera" />
-		<axis xyz="0 1 0"/>
-	</joint>
-
+  
 	<!-- Hokoyu Joint -->
 	<joint name="hokuyo_joint" type="fixed">
-	    <origin xyz="0.001 -0.2 0.2" rpy="0 0 0" />
+	    <origin xyz="0.001 -0.2 0.2" rpy="0 0 3.1415592653589793238" />
 	    <parent link="base_link"/>
 	    <child link="hokuyo" />  
 	    <axis xyz="0 1 0"/> 
@@ -357,6 +360,13 @@
     <parent link="base_link"/>
     <child link="imu_link"/>
     <origin xyz="-0.2 -0.2 0.144" rpy="0 0 0"/>
+  </joint>
+
+  <link name="odom"/>
+  <joint name="odom_to_base" type="fixed">
+    <parent link="odom"/>
+    <child link="base_footprint"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
   </joint>
 
 

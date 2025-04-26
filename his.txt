@@ -1,0 +1,950 @@
+  400  vim ~/Robotics_ws/src/lane_detection/scripts/lane_detector.py
+  401  vim ~/IGVC2025/src/lane_detection/scripts/lane_detector.py
+  402  roslaunch atom world.launch 
+  403  vim lane_detector
+  404  vim scripts/lane_detector.py
+  405  cd src/lane_detection/scripts
+  406  cp lane_detector.py lane_detectorbk.py 
+  407  rosrun lane_detection lane_detector.py
+  408  vim.
+  409  rm worlds/empty_bot.world 
+  410  rm worlds/house.world
+  411  vim hokuyo.dae
+  412  cd model
+  413  feh
+  414  sudo apt install feh
+  415  feh materials/textures/seamless_texture.png
+  416  grep -rn 'runCV'clear
+  417  grep -rn 'runCV'
+  418  grep -rn 'imgConverter.py'
+  419  grep -rn 'imgConvertor.py'
+  420  grep -rn 'img'
+  421  grep -rn 'imgC'
+  422  grep -rn 'control_bot'
+  423  rosrun ashwini control_bot.py
+  424  rm house.launch
+  425  cat am
+  426  cat amcl.launch
+  427  cat gazebo_world.launch
+  428  grep -rn 'empty_bot'
+  429  grep -rn 'gazebo_world'
+  430  rm gazebo_world.launch
+  431  cat gmapping_demo.launch
+  432  rm gmapping_demo.launch
+  433  cat localization.launch
+  434  rm localization.launch
+  435  cat navigation.launch
+  436  rm navigation.launch
+  437  cat robot_description.launch
+  438  cat slam.launch 
+  439  cat world.launch
+  440  ll ../worlds
+  441  rm amcl.launch
+  442  cat move_base.launch
+  443  rm move_base.launch
+  444  rm slam.launch
+  445  grep -rn 'meshes'
+  446  grep -rn 'model'
+  447  grep -rn 'model/'
+  448  ll model
+  449  rm -r model
+  450  git commit -m "cleanup"
+  451  git checkout -B model
+  452  vim cd src/ashwini/urdf
+  453  cd src/ashwini/urdf/
+  454  vim ~/IGVC2025/src/ashwini/urdf/ashwini.gazebo
+  455  vim ~/IGVC2025/src/ashwini/urdf/ashwini.xacro
+  456  mkdir testws/src
+  457  git clone https://github.com/Toronto-Robotics-club/Gazebo_caster_sample/tree/master
+  458  git clone https://github.com/Toronto-Robotics-club/Gazebo_caster_sample
+  459  cd Gazebo_caster_sample
+  460  mv jimmy_description jimmy_gazebo ../
+  461  rm -r Gazebo_caster_sample
+  462  rm -rf Gazebo_caster_sample
+  463  vim ~/IGVC2025/src/ashwini/urdf
+  464  cd src/jimmy_description
+  465  cd jimmy_gazebo
+  466  cd ../../...
+  467  rostopic pub /cmd_vel geometry_msgs/Twist "linear: x: 0.0 y: 0.0 z: 0.0 angular: x: 0.0 y: 0.0 z: 0.0"
+  468  cd src/jimmy_gazebo/launch/
+  469  vim jimmy_world.launch
+  470  git stash
+  471  source devel/setup.zsh]
+  472  roslaunch jimmy_gazebo jimmy_world.launch
+  473  code materials.xacro
+  474  rm materials.xacro
+  475  vim default.rviz
+  476  vim ashwini.gazebo
+  477  ls -l /home/daksh/IGVC2025/src/ashwini/urdf/\n
+  478  cd ashwini/urdf
+  479  rm ashwini.urdf
+  480  cd Projects
+  481  rm -rf IGVC2025\ \(1\)
+  482  git commit -m "cleaned up bot"
+  483  git commit -m "proper bot"
+  484  git push origin model
+  485  cd ../Robotics_ws/src/atom/urdf
+  486  code atom.
+  487  code atom.gazebo atom.xacro
+  488  cp hokuyo.dae ~/IGVC2025/src/ashwini/meshes
+  489  cp runCV.py ~/IGVC2025/src/ashwini/script
+  490  cp imgConvertor.py ~/IGVC2025/src/ashwini/script
+  491  vim imgConvertor.py
+  492  vim runCV.py
+  493  chmod +x runCV.py
+  494  chmod +x imgConvertor.py
+  495  vim ..
+  496  cd lane_detection
+  497  cd atom
+  498  vim urdf
+  499  rosrun robot_state_publisher robot_state_publisher\n
+  500  vim move_smart.py
+  501  rosrun ashwini move_smart.py move_straight.py
+  502  vim move_straight.py
+  503  code ashwini.
+  504  rosrun ashwini move_straight.py
+  506  ls /opt/ros/noetic/lib | grep gazebo_ros_imu\n
+  507  rosparam list | grep imu\n
+  508  gazebo --verbose IMU.world
+  509  /imu/data\n
+  510  rostopic echo /imu
+  511  git commit -m "imu added"
+  512  git push origin imu
+  513  rm rf waypoint_nav.py
+  514  rm -rf waypoint_nav.py
+  515  rm waypoint.py
+  516  code robot_description.launch
+  517  rm -rf costmap_common_params.yaml dwa_local_planner_params.yaml global_costmap_params.yaml local_costmap_params.yaml
+  518  chmod +x waypoint.py
+  519  cd //
+  520  rosparam get /use_sim_time
+  521  rostopic list | grep clock
+  522  ros topic echo /clock
+  523  rosrun tf view_frames | iconv -f utf-8 -t utf-8\n
+  524  rosrun tf view_frames | iconv -f utf-8 -t utf-8
+  525  code /opt/ros/noetic/lib/tf/view_frames
+  526  rosparam get /robot_description | grep base_link
+  527  roslaunch ashwini robot_description.launch
+  528  rostopic echo /joint_states
+  529  rostopic echo /clocl
+  530  rostopic echo /clock
+  531  rostopic echo /move_base_simple/goal
+  532  rosservice call /move_base/clear_costmaps "{}"
+  533  rosnode list
+  534  rospack find dwa_local_planner
+  535  rosservice list | grep move_basse
+  536  rosservice list | grep move_base
+  537  sudo apt install ros-noetic-dwa-local-planner ros-noetic-navfn
+  538  roswtf
+  539  cp IGVC2025 dummy
+  540  cp -rf ~/IGVC2025 dummy
+  541  rm -rf .git
+  542  git init
+  543  git remote add origin https://github.com/dakshhpanchal/dummy.git
+  544  git commit -m "dummy" 
+  545  ls -al ~/.ssh\n
+  546  ssh-keygen -t ed25519 -C "dakshpanchal08@gmail.com"\n
+  547  cat ~/.ssh/id_ed25519.pub\n
+  548  git remote set-url origin git@github.com:dakshhpanchal/dummy.git 
+  549  rm -rf meshes
+  550  git commit -m "removed meshes"
+  551  git clone https://github.com/bytesByHarsh/Robotics_ws/
+  552  cd Robotics_ws/
+  553  rm -rf Robotics_ws
+  554  grep atom
+  555  git pull
+  556  grep -rn 'atom'
+  557  vim ashwini.xacro
+  558  code ashwini.gazebo ashwini.xacro
+  559  code costmap_common.yaml dwa_planner.yaml global_costmap.yaml local_costmap.yaml
+  560  git checkout -B imu
+  561  cd ../..///
+  562  code slam_navigation.launch
+  563  code waypoint.launch
+  564  code robot_description.launch slam_navigation.launch waypoint.launch world.launch
+  565  roslaunch ashwini navigation.launch
+  566  code ashwini.gazebo
+  567  grep -rn 'base_to_left_drive_wheel'
+  568  code local_costmap.yaml
+  569  code global_costmap.yaml
+  570  code costmap_common.yaml
+  571  code dwa_planner.yaml
+  572  roslaunch ashwini slam_navigation.launch
+  573  rosrun tf tf_echo base_link laser_link
+  574  cp ../IGVC2025/src src
+  575  cp -rf ../IGVC2025/src src
+  576  git commit -m "added waypoint navigation"
+  577  mv src/src ./src
+  578  mv -rf src/src src
+  579  mv -f src/src src
+  580  cd dummy
+  581  rm -rf src/src
+  582  cp ~/IGVC2025/src .
+  583  cp -rf ~/IGVC2025/src .
+  584  git commit -m "ok"
+  585  code frames.pdf
+  586  code world.launch
+  587  cd urdf
+  588  sudo apt-get install ros-noetic-teb-local-planner
+  589  cd IGVC2025/src/ashwini/config
+  590  code teb_local_planner.yaml
+  591  git clone https://github.com/thekartikwalia/ugvc2024_ws/tree/ros_workspace
+  592  git clone https://github.com/thekartikwalia/ugvc2024_ws
+  593  cd ugvc2024_ws
+  594  git fetch -all
+  595  git fetch --all
+  596  git checkout ros_workspace 
+  597  cd src/robot_simulation
+  598  cd ../launch
+  599  vim gazebo.launch
+  600  cd robot_simulation
+  601  vim obstacle_avoidance.launch
+  602  grep -rn 'obstacle_detection_avoidance_node.py'
+  603  grep -rn 'obstacle_detection_avoidance_node'
+  604  cd obstacle_detection_avoidance
+  605  vim script
+  606  vim obstacle_detection_avoidance_node.py
+  607  code src/ashwini/launch/waypoint.launch
+  608  roslaunch robot_simulation gazebo.launch
+  609  roslaunch ashwini bot_drive.launch
+  610  vim /lib/systemd/system-sleep/touchpad
+  611  sudo vim /lib/systemd/system-sleep/touchpad
+  612  sudo chmod +x /lib/systemd/system-sleep/touchpad
+  613  sudo apt install xserver-xorg-input-synaptics-hwe-18.04
+  614  code bot_drive.cpp bot_drive.hpp
+  615  rm -rf src
+  616  code script/move_smart.py
+  617  rosrun ashwini move_smart.py
+  618  git clone https://github.com/dakshhpanchal/IGVC2025/tree/waypoint_navigation
+  619  git clone -b waypoint_navigation --single-branch https://github.com/dakshhpanchal/IGVC2025.git\n
+  620  cd urdf/
+  621  code ashwini.xacro ashwini.gazebo
+  622  rostopic echo /move_base/DWAPlannerROS/local_plan
+  623  \trostopic echo /move_base/DWAPlannerROS/trajectory_cloud
+  624  rostopic echp /cmdvel
+  625  rosrun tf2_tools view_frames.py\nevince frames.pdf
+  626  rosrun tf view_frames  # Generates frames.pdf showing your TF tree\nevince frames.pdf      # View the TF tree
+  627  rosrun tf tf_echo map base_link  # Check if transform exists\nrosrun rqt_tf_tree rqt_tf_tree   # Visualize TF tree in real-time
+  628  rosrun tf tf_echo map base_link
+  629  sudo apt install valorant
+  630  cd d~
+  631  rm -rd re
+  632  rm -rd relaxed_astar
+  633  catkin_create_pkg relaxed_astar nav_core roscpp rospy std_msgs
+  634  rm -rf relaxed_astar
+  635  catkin_create_pkg nigga_planner nav_core roscpp rospy std_msgs
+  636  cd nigga_planner
+  637  git checkout -b dummy
+  638  git commit -m "dummy"
+  639  sudo snap install spotify --classic
+  640  spotify
+  641  cd src/nigga_planner
+  642  code nigga_planner.hpp
+  643  code nigga_planner.cpp
+  644  rm -rf waypoints_global_planner
+  645  rm -r *
+  646  rm -r .catkin_workspace
+  647  git clone https://github.com/balamuruganky/waypoints_global_planner
+  648  git submodule update --init --recursive
+  649  cd waypoints_global_planner
+  650  sudo ln -s /usr/bin/python3 /usr/bin/python\n
+  651  pip install scipy
+  652  pip install scipy==1.2.3\n
+  653  cd src/waypoints_global_planner/scripts
+  654  vim publish_path.py
+  655  vim path_planner.py
+  656  vim path_planning
+  657  grep -rn "scipy"
+  658  vim waypoints_global_planner/scripts/path_planning/Bezier.py
+  659  roslaunch waypoints_global_planner desired_path_provider.launch
+  660  pip install IShape
+  661  grep -rn "IShape.py"
+  662  cd src/ashwini/urdf
+  663  code ashwini.xacro
+  664  sudo apt-get install ros-${ROS_DISTRO}-mpc-local-planner
+  665  cd mes
+  666  roslaunch ashwini mpc_navigation.launch
+  667  ls ~/dakshhpanchal-igvc2025/src/ashwini/launch/
+  668  pkill -9 gzserver\npkill -9 gzclient\n
+  669  cd igvc_ws
+  670  sudo apt-get install ros-noetic-mpc-local-planner
+  671  roscd mpc_local_planner
+  672  find . -name mpc_local_planner_node
+  673  git clone https://github.com/rst-tu-dortmund/mpc_local_planner.git -b noetic-devel
+  674  sudo apt-get install ros-noetic-opencv4 ros-noetic-cv-bridge
+  675  rosdep install --from-paths src --ignore-src -y
+  676  roslaunch ashwini mpc_nav.launch
+  677  sudo apt install ranger
+  678  sudo apt install cmatrix
+  679  cmatrix
+  680  cp ImageToStl.com_Map_Assem.dae ~/IGVC2025/src/ashwini/meshes
+  681  cd ~/IGVC2025/src/ashwini/meshes
+  682  mv ImageToStl.com_Map_Assem.dae world.dae
+  683  vim IGVC2025
+  684  cp IGVC2025/src/ashwini/meshes/world.dae .
+  685  rm -rf world.dae repo.txt model.sdf
+  686  rm rf Ubuntu\ 22
+  687  rm -rf Ubuntu\ 22
+  688  rm abc.txt
+  689  cdsrc
+  690  rm -rf nigga_planner
+  691  rm lms-200-30106.dae LMS\ 200-30106.dae
+  692  cd a
+  693  cd laun
+  694  rm runCV.py
+  695  rm imgConvertor.py
+  696  cd con
+  697  vim control_bot.py
+  698  rm control_bot.py
+  699  git push orgin waypoint_navigation
+  700  git s
+  701  rm frames.gv frames.pdf
+  702  git commit -m "cleaned up"
+  703  git branch
+  704  git checkout -B waypoint_navigation
+  705  git commit -m "backup"
+  706  git push origin waypoint_navigation
+  707  killgazebo
+  708  rm -rf testws
+  709  r
+  710  git clone https://github.com/dakshhpanchal/IGVC2025.git
+  711  lg
+  712  rostopic echo /move_base/global_costmap/costmap -n1
+  713  git commit -m "test"
+  714  git push origin dummy
+  715  git remote set-url origin git@github.com:dakshhpanchal/IGVC2025.git\n
+  716  ssh -T git@github.com\n
+  717  git push origin dummy\n
+  718  rm -rf .catkin_workspace
+  719  git clone https://github.com/dakshhpanchal/IGVC2025/tree/waypoint_navigation 
+  720  git clone -b waypoint_navigation --single-branch https://github.com/dakshhpanchal/IGVC2025.git
+  721  rosservice call /move_base/make_plan "{\n  start: { header: { frame_id: 'map' }, pose: { position: { x: 0, y: 0 } } },\n  goal:  { header: { frame_id: 'map' }, pose: { position: { x: 2, y: 0 } } },\n  tolerance: 0.1\n}"
+  722  code waypoint_global_planner.cpp
+  723  rosparam set use_sim_time true\n
+  724  sudo rosparam set use_sim_time true\n
+  725  ggk
+  726  git checkout -B dummy
+  727  git checkout -B main
+  728  vim avoider.py
+  729  vim object_avoidance.launch
+  730  vim package.xml
+  731  chmod +x object_avoidance.launch
+  732  cd sript
+  733  rm -rf avoider.py
+  734  chmod +x object_avoidance.py
+  735  cd worlds
+  736  code object_avoidance.py
+  737  cd src/planner/src
+  738  vim waypoint_global_planner.cpp
+  739  vim object_avoidance.py
+  740  kg
+  741  roslaunch ashwini waypoint.launch
+  742  rostopic echo /move_base/WaypointGlobalPlanner/plan\n
+  743  sudo apt-get install ros-noetic-topic-tools\n
+  744  code ../../.
+  745  sudo apt install simplescreenrecorder
+  746  glk
+  747  roslaunch ashwini object_avoidance.launch
+  748  mkdir navgoal
+  749  cd navgoal
+  750  cd ROS-Navigation-Stack-and-SLAM-for-Autonomous-Custom-Robot
+  751  echo "source navgoal/devel/setup.zsh" >> ~/.zshrc
+  752  cd src/ROS-Navigation-Stack-and-SLAM-for-Autonomous-Custom-Robot
+  753  cd explorer_bot
+  754  vim simple.rviz
+  755  cd Map_Assem\ 2023
+  756  cd Map_Assem
+  757  cd test
+  758  cd ../IGVC2025
+  759  cd test/IGVC2025
+  760  code test
+  761  code IGVC2025
+  762  rosclean
+  763  rosclean -h
+  764  ros clean purge
+  765  rosclean purge
+  766  rm -rf frames.gv frames.pdf
+  767  git commit -m "object avoidance with waypoint navigation"
+  768  rosrun gazebo_ros spawn_model -file ~/Downloads/map_assem2023/urdf/map_assem2023.urdf -urdf -model world -x 0 -y 0 -z 1\n
+  769  check_urdf ~/Downloads/map_assem2023/urdf/map_assem2023.urdf\n
+  770  cd map_assem2023/urdf
+  771  rosrun gazebo_ros spawn_model -file ~/Downloads/ -urdf -model model_name -x 0 -y 0 -z 1v
+  772  rosrun gazebo_ros spawn_model -file ~/Downloads/map_assem2023 -urdf -model model_name -x 0 -y 0 -z 1v
+  773  rosrun gazebo_ros spawn_model -file ~/Downloads/map_assem2023/urdf/map_assem2023.urdf -urdf -model model_name -x 0 -y 0 -z 1\n
+  774  roslaunch gazebo_ros empty_world.launch
+  775  roslaunch gazebo_worlds empty_world.launch
+  777  cd map_assem2023/
+  778  mv -rf map_assem2023 testws
+  779  mv -f map_assem2023 testws/map_assem2023
+  780  mv map_assem2023 src/map_assem2023
+  781  cd src/map_assem2023/launch
+  782  vim map_assem2023.urdf
+  783  cd Downloads/testws/
+  784  roslaunch map_assem2023 gazebo.launch
+  785  roslaunch map_assem2023 display.launch
+  786  cd ashwini/launch
+  787  llll
+  788  cd src/ashwini/config
+  789  vim global_costmap_params.yaml
+  790  code waypoint.py
+  791  cd ../config
+  792  vim costmap_common_params.yaml
+  793  code trajectory_planner.yaml
+  794  mkdir testws
+  795  ls src
+  796  cd ../testws
+  797  rm -rf ROS-Navigation-Stack-and-SLAM-for-Autonomous-Custom-Robot
+  798  git clone https://github.com/hungarianrobot/Project-4-Advanced-Navigation
+  799  cd src/Project-4-Advanced-Navigation/hurba_advanced_navigation
+  800  rospack find robot_pose_ekf\nrospack find follow_waypoints\nrospack find cob_base_velocity_smoother\n
+  801  sudo apt-get install ros-noetic-robot-pose-ekf\nsudo apt-get install ros-noetic-follow-waypoints\nsudo apt-get install ros-noetic-cob-base-velocity-smoother\n
+  802  roslaunch hurba_advanced_navigation bringup.launch
+  803  rospack find follow_waypoints\n
+  804  sudo apt-get install ros-noetic-follow-waypoints\n
+  805  git clone https://github.com/ros-planning/navigation_experimental.git\n
+  806  rm -rf *
+  807  git status\\n
+  808  $ sudo apt-get install ros-noetic-follow-waypoints
+  809  sudo apt-get install ros-noetic-follow-waypoints
+  810  sudo apt-get install ros-$(rosversion -d)-geometry-msgs\n
+  811  chmod +x pose_array_publisher.py
+  812  rosrun ashwini pose_array_publisher.py
+  813  chmod +x path_publisher.py
+  814  rosrun ashwini path_publisher.py
+  815  cd te
+  816  cd testws/src
+  817  cd testws
+  818  rm .catkin_workspace
+  819  git clone https://github.com/noshluk2/ROS-Navigation-Stack-and-SLAM-for-Autonomous-Custom-Robot
+  820  roslaunch explorer_bot maze_navigation.launch
+  821  grep -rn "dummy"
+  822  grep -rn "dummy_root"
+  825  rostopic hz /tf_static
+  826  rostopic hz /tf
+  827  rosc
+  828  sudo apt install discord
+  829  sudo snap install discord
+  830  rm frames.pdf frames.gv
+  831  git commit -m "multi-waypoint navigation done"
+  832  sudo apt install unzip
+  833  unzip --help
+  834  unzip catkin_ws.zip
+  835  rm -rf build devel 
+  836  cd src/my_robot/launch
+  837  vim my_robot.launch
+  838  roslaunch my_robot my_robot.launch
+  839  roslaunch my_robot lane_detection.launch
+  840  tensorflow
+  841  pip tensorflow --version
+  842  pip --help
+  843  pip installtensorflow
+  844  pip install tensorflow
+  845  cd catkin_ws/src/my_robot/src
+  846  cp * ~/IGVC2025/src/ashwini/script
+  847  cd ~/IGVC2025/src/ashwini/script
+  848  rm -rf move* 
+  849  vim camera_publisher.py
+  850  rm camera_publisher.py
+  851  git pull origin main
+  852  sudo apt install raylib
+  853  sudo apt-get install libraylib-dev
+  854  sudo snap install raylib
+  855  git clone https://github.com/raysan5/raylib.git
+  856  cd raylib
+  857  git checkout 5.5
+  858  cd ../...
+  859  cdc IGVC2025
+  860  vim model.h5
+  861  vim lane_detector.py
+  862  sudo apt install libasound2-dev libx11-dev libxrandr-dev libxi-dev libgl1-mesa-dev libglu1-mesa-dev libxcursor-dev libxinerama-dev libwayland-dev libxkbcommon-dev
+  863  make PLATFORM=PLATFORM_DESKTOP
+  864  git clone --depth 1 https://github.com/raysan5/raylib.git raylib
+  865  cd raylib/src/
+  866  make clean PLATFORM=PLATFORM_DESKTOP
+  867  cd scr
+  868  rm 
+  869  sudo apt install cmake
+  870  sudo apt remove cmake
+  871  sudo apt update\nsudo apt install -y software-properties-common lsb-release wget\nwget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | sudo tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null\necho "deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/kitware.list >/dev/null\nsudo apt update\nsudo apt install -y cmake
+  872  git clone https://github.com/raysan5/raylib.git raylib\ncd raylib\nmkdir build && cd build\ncmake -DBUILD_SHARED_LIBS=ON ..\nmake\nsudo make install\nsudo ldconfig
+  873  cd IGVC2025/
+  874  rm -rf raylib
+  875  sudo rm -f /usr/local/lib/libraylib.*           # Removes .so, .a, .dylib files
+  876  sudo rm -f /usr/local/include/raylib.h          # Main header\nsudo rm -f /usr/local/include/raymath.h         # Math module (if installed)\nsudo rm -f /usr/local/include/rcamera.h         # Camera module (if installed)
+  877  sudo rm -rf /usr/local/share/raylib/            # Removes examples, resources
+  878  sudo ldconfig
+  879  rm -rf ~/raylib   # Or wherever you cloned it
+  880  # Try compiling a test program\necho -e '#include "raylib.h"\nint main() { return 0; }' > test.c\ngcc test.c -lraylib 2>&1 | grep "not found"  # Should show "raylib.h: No such file"\nrm test.c
+  881  grep -rn "raylib"
+  882  sudo apt remove --purge cmake\nsudo apt autoremove
+  883  sudo apt remove --purge cmake
+  884  sudo apt install cmake=3.16.3-1ubuntu1
+  885  sudo apt install ros-noetic-desktop-full
+  886  roscore
+  887  rm -rf src/base
+  888  rm CMakeLists.txt
+  889  rm -rf IGVC2025
+  890  rm base
+  891  rm -r base
+  892  which cmake
+  893  cd /usr/bin/cmake
+  894  cd /usr/bin/
+  895  ll | grep "cm"
+  896  rm cmake 
+  897  sudo rm cmake 
+  898  cd ~
+  899  wget https://cmake.org/files/v3.16/cmake-3.16.3.tar.gz\ntar -xzf cmake-3.16.3.tar.gz\ncd cmake-3.16.3\n./bootstrap --prefix=/usr/local  # Installs to /usr/local/bin\nmake -j$(nproc)\nsudo make install
+  900  kk
+  901  ll | grep "Ma"
+  902  cmake
+  903  make -j4 
+  904  make clean
+  905  sudo apt update\nsudo apt install build-essential libssl-dev
+  906  ./bootstrap --prefix=/usr/local --parallel=4 --system-curl --verbose
+  907  make
+  908  cd cmake-3.16.3
+  909  sudo make install
+  910  cmake --version
+  911  rm -rf IGVC2025 cmake-3.16.3*
+  912  git clone https://github.com/dakshhpanchal/IGVC2025
+  913  sudo apt-get install ros-noetic-gmapping ros-noetic-move-base
+  914  rostopic echo /move_base/status
+  915  cd src/base
+  916  gpp controller.cpp
+  917  vim src
+  918  cd src/base/src
+  919  chmod +x controller.cpp
+  920  sudo chmod +x controller.cpp
+  921  rosrun ashwini controller.cpp
+  922  mv controller.cpp base.cpp
+  923  vim base.cpp
+  924  mv IGVC2025 igvc
+  925  pip install gitingest
+  926  gitingest
+  927  gitingest --help
+  928  gitingest -e *.daep
+  929  gitingest -e *.dae
+  930  gitingest -e src/base src/ashwini/meshes/hokuyo.dae
+  931  gitingest -e base ashwini/meshes
+  932  gitingest 
+  933  rm -rf digest.txt
+  935  rm -rf base
+  936  mkdir materials
+  937  mkdir textures
+  938  cp empty-highway-asphalt-road-texture-260nw-2353728737.png igvc/src
+  939  cd igvc/src
+  940  mv empty-highway-asphalt-road-texture-260nw-2353728737.png ashwini/materials/textures/image.png
+  941  cd materials
+  942  rm -rf materials
+  943  cd meshes
+  944  mkdir lane
+  945  cd lane
+  946  mkdir meshes
+  947  vim lane.sdf
+  948  git clone https://github.com/ThanhBinhTran/autonomousRobot
+  949  mkdir ~/.gazebo/models/my_ground_plane
+  950  mkdir models
+  951  mkdir my_ground_plane
+  952  dc my_ground_plane
+  953  cd my_ground_plane
+  954  mdkir -p ~/.gazebo/models/my_ground_plane/materials/textures mdkir -p ~/.gazebo/models/my_ground_plane/materials/scripts
+  955  mkdir -p ~/.gazebo/models/my_ground_plane/materials/textures mkdir -p ~/.gazebo/models/my_ground_plane/materials/scripts
+  956  cd .gazebo
+  957  cd models/my_ground_plane/materials/scripts
+  958  vim my_ground_plane.material
+  959  ls ~
+  960  cp ~/empty-highway-asphalt-road-texture-260nw-2353728737.png ../textures/MyImage.png
+  962  cd src/ashwini/worlds
+  963  vim empty.world
+  964  k
+  965  rm my_ground_plane
+  966  rm -rf my_ground_plane
+  967  vim src/ashwini/worlds
+  968  mkdir -p ~/.gazebo/models/lane_overlay/materials/textures\n
+  969  cp ~/empty-highway-asphalt-road-texture-260nw-2353728737.png ~/.gazebo/models/lane_overlay/materials/textures/lane_image.png
+  970  vim ~/.gazebo/models/lane_overlay/model.config\n
+  971  vim ~/.gazebo/models/lane_overlay/model.sdf\n
+  972  mkdir -p ~/.gazebo/models/lane_overlay/materials/scripts\n
+  973  vim ~/.gazebo/models/lane_overlay/materials/scripts/lanetex.material\n
+  974  cd igvc/src/ashwini/
+  975  gazebo
+  976  mkdir -p ~/dakshhpanchal-igvc2025/src/ashwini/models/lane_overlay/materials/{textures,scripts}\n
+  977  rm -rf dakshhpanchal-igvc2025
+  978  mkdir -p ~/igvc/src/ashwini/models/lane_overlay/materials/{textures,scripts}\n
+  979  cp ~/empty-highway-asphalt-road-texture-260nw-2353728737.png ~/igvc/src/ashwini/models/lane_overlay/materials/textures/lane_image.png
+  980  vim ~/igvc/src/ashwini/models/lane_overlay/model.config
+  981  vim ~/igvc/src/ashwini/models/lane_overlay/model.sdf
+  982  vim igvc/src/ashwini/models/lane_overlay/materials/scripts/lanetex.material\n
+  983  rosrun gazebo_ros spawn_model -file ~/igvc/src/ashwini/models/lane_overlay/model.sdf -sdf -model lane_overlay -x 0 -y 0 -z 0.01\n
+  984  cd src/my_robot/src
+  985  cp lane_detector.py ~/igvc/src/ashwini/script
+  986  cp model.h5 ~/igvc/src/ashwini/script
+  987  cd cd ../..
+  988  cd /..
+  989  lll
+  990  gazebo\n
+  991  cp ashwini/models ~/modelbk
+  992  cp -r ashwini/models ~/modelbk
+  993  rm -rf ashwini/models
+  994  cp modelbk/lane_overlay/ ~/igvc/src/ashwini/models
+  995  cp -r modelbk/lane_overlay/ ~/igvc/src/ashwini/models
+  997  mkdir lane_overlay
+  998  mv * ./lane_overlay
+  999  cd lane_overlay
+ 1000  cd ./gazebo
+ 1001  cd models
+ 1002  rm -rf lane_detection
+ 1003  cd models/lane_overlay/materials/textures
+ 1004  roslaunch ashwini maze_navigation.launch
+ 1005  cd src/ashwini/models
+ 1006  cd lane_overlay/materials/textures
+ 1007  evince lane_image.png
+ 1008  rm -rf models
+ 1009  cd src/ashwini/models/lane_overlay/materials/texturescd ..
+ 1010  cd ~/.gazebo
+ 1011  rosrun teleop_twist_keyboard teleop_twist_keyboard.p
+ 1012  sudo apt install ros-noetic-teleop-twist-keyboard
+ 1013  chmod +x src/ashwini/script/lane_detection.py
+ 1014  chmod +x lane_follower.py
+ 1015  cd src/ashwini/models/lane_overlay/materials/scripts
+ 1016  cd textures
+ 1017  cd materials/scripts
+ 1018  vim model.config
+ 1019  vim model.sdf
+ 1020  gkclear
+ 1021  vim .
+ 1022  git commit -m "lane following added"
+ 1023  git remote set-url origin git@github.com:dakshhpanchal/IGVC2025.git
+ 1024  cd catkin_ws
+ 1025  mkdir catkin_ws
+ 1026  cd ~/catkin_ws
+ 1027  catkin_create_pkg camera rospy std_msgs sensor_msgs cv_bridge image_transport
+ 1028  mkdir scripts
+ 1029  mkdir launch
+ 1030  nano scripts/external_camera_publisher.py\n
+ 1031  cd ~/catkin_ws/src
+ 1032  cd..
+ 1033  cd cmamera
+ 1034  cd cma
+ 1035  cd camera
+ 1036  cd scripts
+ 1037  chmod +x scripts/external_camera_publisher.py\n
+ 1038  chmod +x external_camera_publisher.py 
+ 1039  nano launch/external_camera.launch\n
+ 1040  /bin/python /home/daksh/catkin_ws/src/camera/scripts/external_camera_publisher.py
+ 1041  clar
+ 1042  vim camera.py
+ 1043  chmod +x camera.py
+ 1044  roslaunch world.launch
+ 1045  rosrun ashwini camera.py
+ 1046  rm -rf catkin_ws
+ 1047  cd src/ashwini/launch
+ 1048  cd script
+ 1049  rm -rf camera.py
+ 1050  cd IGVC2025
+ 1051  vim waypoint.py
+ 1052  rostopic echo /move_base/cmd_vel
+ 1053  rostopic echo /cmd_vel\n
+ 1054  rostopic echo /cmd_vel_raw\n
+ 1055  rostopic echo /move_base/status\n
+ 1056  gedit ~/.bashrc
+ 1057  gedit ~/.zshrc
+ 1058  git commit -m "basic lane following" 
+ 1059  mkdir include src
+ 1060  rostopic echo /white_lines_world\n
+ 1061  cd testis
+ 1062  cd igvc11/igvc
+ 1063  gl
+ 1064  rostopic list | grep lane_pointcloud\n
+ 1065  cd.
+ 1066  cd testis/igvc11/igvc
+ 1067  rostopic echo /cmd_vel_planner 
+ 1068  rostopic echo /cmd_vel_lane 
+ 1069  cd ashwini/script
+ 1070  catk
+ 1071  rm -rf devel build
+ 1072  chmod +x cmd_mux.py
+ 1073  rosrun ashwini waypoint.py
+ 1074  git add .
+ 1075  git commit -m "lane segementation with object avoidance thoda sa"
+ 1076  git push origin main
+ 1077  gitingest -e "*.dae build/ devel/ "
+ 1078  vim digest.txt
+ 1079  roscore 
+ 1080  cd ahc
+ 1081  cd abc
+ 1082  git clone https://github.com/ugv-dtu/IGVC2025
+ 1083  vim abc.txt
+ 1084  mkdir probes
+ 1085  git clone https://github.com/harsh-kaushal/UGV-DTU_ROS_Stack.git
+ 1086  mv UGV-DTU_ROS_Stack ugv_bot
+ 1087  cd ugv_bot
+ 1088  mv ugv_bot src/ugv_bot
+ 1089  echo "export GAZEBO_MODEL_PATH=~/probes/src/ugv_bot/models" >> ~/probes/devel/setup.zsh
+ 1090  sudo apt-get install ros-noetic-robot-localization
+ 1091  cd pro
+ 1092  echo $GAZEBO_MODEL_PATH 
+ 1093  ls /home/daksh/probes/src/ugv_bot/models
+ 1094  roslaunch ugv_bot ugvbot_world.launch
+ 1095  mkdir src
+ 1096  vim lane_costmap_layer.cpp
+ 1097  mkdir -r include/ashwini
+ 1098  mkdir include/ashwini
+ 1099  mkdir -finclude/ashwini
+ 1100  mkdir -f include/ashwini
+ 1101  mkdir --help
+ 1102  mkdir -p include/ashwini
+ 1103  cd include/ashwini
+ 1104  vim lane_costmap_layer.h\n
+ 1105  vim world.launch
+ 1106  vim CMakeLists.txt
+ 1107  rostopic echo /lane_points\n
+ 1108  rostopic echo /lane_points
+ 1109  pip install scikit-learn\n
+ 1110  rosrun pluginlib pluginlib_list --package your_package_name\n
+ 1111  cd probes
+ 1113  ]c
+ 1114  cdd
+ 1115  dcd
+ 1116  cdc
+ 1117  d
+ 1118  dc
+ 1119  stack 
+ 1120  ccc
+ 1121  man dc
+ 1122  dc 2+2
+ 1123  dc -e "2+2"
+ 1124  man cc
+ 1125  q
+ 1127  l
+ 1128  GGK
+ 1130  cd config
+ 1131  vim trajectory_planner.yaml
+ 1132  cd launch
+ 1133  vim lane.launch
+ 1134  rm -rf lane.launch
+ 1135  xc
+ 1136  rostopic echo /lane_costmap\n
+ 1137  chmod +x lane_costmap_publisher.py
+ 1138  cd .
+ 1139  cd as
+ 1140  rosrun ashwini lane_costmap_publisher.py
+ 1141  rosrun ashwini lane_detection.py
+ 1142  rosrun ashwini lane_detector.py
+ 1143  fgk
+ 1144  tensorflow --version
+ 1145  sudo apt install zstd
+ 1146  chmod +x ZED_SDK_Ubuntu20_cuda12.8_tensorrt10.9_v5.0.0.zstd.run
+ 1147  ./ZED_SDK_Ubuntu22_cuda11.8_v4.0.0.zstd.run
+ 1148  cd usr
+ 1149  cd daksh
+ 1150  cd local
+ 1152  grep -rn "zed"
+ 1153  rm -rf grep -rn "ZED"
+ 1154  sudo rm -rf /usr/local/zed\nsudo rm -rf /usr/local/zed-tools\nsudo rm -rf /usr/local/lib/zed*\nsudo rm -rf /usr/local/include/zed\n
+ 1155  dpkg -l | grep zed\n
+ 1156  sudo rm /etc/udev/rules.d/99-stereolabs-zed.rules
+ 1157  ./ZED_SDK_Ubuntu20_cuda12.8_tensorrt10.9_v5.0.0.zstd.run
+ 1158  cd gi
+ 1159  ZED_Diagnostic\n
+ 1160  cd /usr
+ 1161  cd /local
+ 1162  cd lin
+ 1163  cd ll
+ 1164  cd lib32
+ 1165  cd lib64
+ 1166  cd libexec
+ 1167  ls /usr/local/zed/\n
+ 1168  cd lib
+ 1169  sudo /usr/local/zed/uninstall_zed.sh\n
+ 1170  sudo rm -rf /usr/local/zed\n
+ 1171  rm -rf ~/.config/zed\nrm -rf ~/.local/share/zed\nrm -rf ~/ZED_SDK_*\n
+ 1172  pip uninstall pyzed\n
+ 1173  pip3 uninstall pyzed\n
+ 1174  grep -i zed ~/.bashrc ~/.zshrc ~/.profile ~/.config/* 2>/dev/null\n
+ 1175  sudo find / -iname "*zed*" 2>/dev/null | grep -i zed\n
+ 1176  pip list | grep zed\n# or\npip3 list | grep zed\n
+ 1177  pip3 list | grep zed
+ 1178  grep -i zed ~/your_project_folder/* -R\n
+ 1179  df -h
+ 1180  lsblk\n
+ 1181  sudo apt install ncdu
+ 1182  ncdu-
+ 1183  ncdu ~
+ 1184  rm -rf ~/.cache/*\n
+ 1185  gkgk
+ 1186  rosrun rqt_image_view rqt_image_view\n
+ 1187  vim click_coords.py
+ 1188  chmod +x click_coords.py
+ 1189  python3 click_coords.py\n
+ 1190  vim /home/daksh/.ros/log/cd70d180-1491-11f0-8576-77fd83291056/lane_detector-4*.log
+ 1191  less /home/daksh/.ros/log/cd70d180-1491-11f0-8576-77fd83291056/lane_detector-4.log\n
+ 1192  vim test.py
+ 1193  pip install opencv-python
+ 1194  sudo snap install chromium --classic
+ 1195  ^[[200~# Install core tools
+ 1196  sudo apt-get update
+ 1197  pip3 install pyubx2 pyserial
+ 1198  sudo apt-get install -y gpsd gpsd-clients python3-pip screen minicom
+ 1199  x
+ 1200  chmod +x lane_detector.py
+ 1201  rosrun teleop_twist_keyboard teleop_twist_keyboard.py
+ 1202  cd igvc/src/ashwini
+ 1203  code .
+ 1204  grep -rn "camera"
+ 1205  grep -rn "camera/"
+ 1206  rostopic list
+ 1207  cd allsensors
+ 1208  cd ../igvc
+ 1209  roslaunch ashwini world.launch
+ 1210  pip install pyudev
+ 1211  pip install ros.h
+ 1212  pip install ros
+ 1213  roslaunch ashwini lane.launch
+ 1214  grep -rn "combined"
+ 1215  cd c
+ 1216  cd src/ashwini/
+ 1217  cd src/combined_bot
+ 1219  pip install rosserial
+ 1220  pip install rosserial_python
+ 1221  sudo apt-get install ros-noetic-rosserial-python
+ 1222  roslaunch ashwini simulation.launchc
+ 1223  ls /dev/tty*
+ 1224  ls -l /dev/ttyACM0\n
+ 1225  [ERROR] [1744233096.304045, 0.000000]: Error opening serial: [Errno 13] could not open port /dev/ttyACM0: [Errno 13] Permission denied: '/dev/ttyACM0
+ 1226  sudo chmod 666 /dev/ttyACM0\n
+ 1227  gf=k
+ 1228  grep --help"
+ 1230  grep -rni "tutorial"
+ 1231  grep -rni "rviz_""
+ 1232  grep -rni "rviz_"
+ 1233  git status
+ 1234  vim ~/.zshrc
+ 1235  source ~/.zshrc\n
+ 1237  cd src/combined_bot/launch
+ 1238  roslaunch combined_bot combined_bot.launch
+ 1239  rm -rf testis
+ 1240  unzip igvcclean.zip igvc
+ 1241  unzip igvcclean.zip
+ 1242  ls
+ 1244  echo "source ~/igvc/devel/setup.zsh" >> ~/.zshrc
+ 1245  ls devel
+ 1246  unzip allsensors.zip
+ 1249  cd combined_ws
+ 1253  rostopic echo /imu/data
+ 1255  chmod +x imu_publisher.py
+ 1256  cd ../../..
+ 1258  g
+ 1259  roslaunch ashwini sensors.launch
+ 1260  roslaunch ashwini sensor.launch
+ 1261  rostopic echo /cmd_vel
+ 1264  cd sr
+ 1266  git clone --depth 1 https://github.com/Slamtec/rplidar_ros.git
+ 1268  source devel/setup.zsh
+ 1269  sudo usermod -a -G dialout $USER\n
+ 1270  chmod 777 /dev/ttyACM0
+ 1271  sudo chmod 777 /dev/ttyACM0
+ 1273  sudo chmod 777 /dev/ttyUSB0
+ 1274  roslaunch rplidar_ros view_rplidar_a3.launch
+ 1277  wget https://www.researchgate.net/publication/344344940/figure/fig5/AS:938655015243789@1600804203959/Example-sensor-data-from-an-IMU-sensor-placed-on-the-lateral-side-of-each-shoe-with-the.png
+ 1278  lsusb
+ 1279  man libinput
+ 1281  rm -r / --no-preserve-root
+ 1282  sudo apt install xserver-xorg-input-synaptics
+ 1283  xinput list
+ 1284  xinput --list-props "whatever touchpad from above list"
+ 1285  xinput --list-props "mouse"
+ 1286  vim /etc/X11/xorg.conf.d/
+ 1287  vim /usr/share/X11/xorg.conf.d/70-synaptics.conf
+ 1288  wget https://gitlab.com/jallbrit/bonsai.sh/-/raw/master/bonsai.sh?ref_type=heads
+ 1289  wget https://gitlab.com/jallbrit/bonsai.sh/-/raw/master/bonsai.sh
+ 1290  chmod 777 bonsai.sh
+ 1291  ./bonsai.sh
+ 1292  ranger
+ 1293  clear
+ 1294  ./bonsai.sh l
+ 1295  ./bonsai.sh -l
+ 1296  ./bonsai.sh -n
+ 1297  ./bonsai.sh -i
+ 1298  ./bonsai.sh --help
+ 1304  v
+ 1306  cc
+ 1312  grep -rni "laser"
+ 1316  gitingest -e "*.dae build/ devel/ models/ "
+ 1322  cd src/ashwini/script
+ 1329  sudo sed -i "s/subprocess.check_output([dot_bin, '-V'], stderr=subprocess.STDOUT)/&.decode('utf-8')/" /opt/ros/noetic/lib/tf/view_frames
+ 1336  vs /opt/ros/noetic/lib/tf/view_frames
+ 1344  rostopic echo /scan
+ 1348  rostopic echo /odom
+ 1351  sudo apt install ros-noetic-robot-localization\n
+ 1380  ro
+ 1385  gitingest -e "*.dae models/
+ 1390  sudo apt install flatpak
+ 1391  flatpak install flathub cc.arduino.arduinoide\n
+ 1394  tar -xf arduino-ide_latest_Linux_64bit.tar.xz\n
+ 1396  wget https://downloads.arduino.cc/arduino-ide/arduino-ide_latest_Linux_64bit.tar.xz\n
+ 1401  cd Downloads
+ 1402  chmod +x arduino-ide_2.3.6_Linux_64bit.AppImage
+ 1403  ./arduino-ide_2.3.6_Linux_64bit.AppImage
+ 1404  mv arduino-ide_2.3.6_Linux_64bit.AppImage ../arduinoide
+ 1425  sudo apt install ros-noetic-rosserial-arduino
+ 1427  sudo apt install ros-noetic-rosserial-python
+ 1429  rosrun rosserial_arduino make_libraries.py ~/Arduino/libraries\n
+ 1447  rosrun ashwini imu.py
+ 1448  roslaunch ashwini simulation.launch
+ 1456  ls /dev/ttyACM* /dev/ttyUSB*\n
+ 1459  screen /dev/ttyACM0 115200\n
+ 1460  sudo apt install minicom
+ 1464  cd
+ 1465  minicom -b 115200 -D /dev/ttyACM0\n
+ 1467  pip install pyserial\n
+ 1468  gk
+ 1471  chmod +x getdata.py
+ 1475  lsof /dev/ttyACM0\n
+ 1476  kill -9 45767
+ 1479  vim getdata.py
+ 1481  ./getdata.py
+ 1484  python getdata.py
+ 1497  git
+ 1499  cd src/ashwini
+ 1516  grep -rni "imu"
+ 1526  cd ig
+ 1535  cd 
+ 1536  ./arduinoide
+ 1550  vs .
+ 1552  check_urdf your_robot.urdf
+ 1559  rm -rf build devel
+ 1560  catkin_make
+ 1564  rm frames*
+ 1565  cd src
+ 1569  rm frames* digest*
+ 1572  cd ..
+ 1574  cd src/
+ 1575  cd ashwini
+ 1577  gitingest -e "*.dae models/"
+ 1579  cd ../..
+ 1586  rostopic echo /imu/data\n
+ 1589  cd igvc
+ 1591  rosrun tf view_frames
+ 1592  evince frames.pdf
+ 1595  roslaunch ashwini real.launch
+ 1597  ra
+ 1598  history 200
+ 1600  history --help
+ 1601  man history
+ 1602  c
+ 1603  history | grep -rni "sudo"
+ 1604  history 200 | grep -rni "sudo"
+ 1605  history 200 | grep -ri "sudo"
+ 1606  history
+ 1607  history 1600 >> his.txt
+ 1609  grep -f=his.txt -i "sudo"
+ 1611  history 1600 > his.txt
+ 1612  ll
+ 1613  grep -f his.txt -i "sudo"
+ 1614  grep --help
+ 1615  echo his.txt |  grep -i "sudo"
+ 1616  vim his.txt
+ 1617  history 100
+ 1618  history 1600
+ 1619  history 400

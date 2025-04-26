@@ -1,0 +1,2511 @@
+Directory structure:
+└── ashwini/
+    ├── package.xml
+    ├── config/
+    │   ├── costmap_common_params.yaml
+    │   ├── ekf.yaml
+    │   ├── global_costmap_params.yaml
+    │   ├── local_costmap_params.yaml
+    │   ├── rplidar_filter.yaml
+    │   └── trajectory_planner.yaml
+    ├── launch/
+    │   ├── lane.launch
+    │   ├── move_base.launch
+    │   ├── real.launch
+    │   ├── robot_description.launch
+    │   ├── simulation.launch
+    │   └── suryatest.launch
+    ├── meshes/
+    ├── models/
+    ├── rviz/
+    │   ├── default.rviz
+    │   └── real.rviz
+    ├── script/
+    │   ├── camera_publisher.py
+    │   ├── imu.py
+    │   ├── lane_detection.py
+    │   ├── lane_follower.py
+    │   ├── motor_serial.py
+    │   ├── move_around.py
+    │   ├── move_smart.py
+    │   ├── move_straight.py
+    │   └── waypoint.py
+    ├── urdf/
+    │   ├── ashwini.gazebo
+    │   └── ashwini.xacro
+    └── worlds/
+        └── empty.world
+
+================================================
+File: package.xml
+================================================
+<?xml version="1.0"?>
+<package format="2">
+  <name>ashwini</name>
+  <version>0.0.0</version>
+  <description>The ashwini package</description>
+
+  <maintainer email="harsh@todo.todo">harsh</maintainer>
+
+  <license>TODO</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>message_generation</build_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>rospy</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <build_depend>opencv2</build_depend>
+  <build_depend>cv_bridge</build_depend>
+  
+
+  <build_export_depend>roscpp</build_export_depend>
+  <build_export_depend>rospy</build_export_depend>
+  <build_export_depend>std_msgs</build_export_depend>
+  <build_export_depend>sensor_msgs</build_export_depend>
+  <build_export_depend>opencv2</build_export_depend>
+  <build_export_depend>cv_bridge</build_export_depend>
+  
+  <depend>geometry_msgs</depend>
+  <exec_depend>message_runtime</exec_depend>
+  <exec_depend>roscpp</exec_depend>
+  <exec_depend>rospy</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>opencv2</exec_depend>
+  <exec_depend>cv_bridge</exec_depend>
+
+</package>
+
+
+
+================================================
+File: config/costmap_common_params.yaml
+================================================
+obstacle_range: 6.0
+raytrace_range: 8.5
+footprint: [[0.3,0.2],[0.3,-0.2],[-0.3,-0.2],[-0.3,0.2]]
+map_topic: /map
+subscribe_to_update: true
+observation_sources: laser_scan_sensor
+laser_scan_sensor: {sensor_frame: hokuyo, data_type: LaserScan, topic: /scan, marking: true, clearing: true }
+global_frame: map
+robot_base_frame: base_link
+always_send_full_costmap: true
+
+
+
+================================================
+File: config/ekf.yaml
+================================================
+ekf_node:
+  frequency: 30
+  sensor_timeout: 0.1
+  two_d_mode: true
+  publish_tf: true
+  map_frame: map
+  odom_frame: odom
+  base_link_frame: base_link
+  world_frame: odom
+
+  imu0: imu/data
+  imu0_config: [false, false, false,  # x, y, z pos
+                false, false, false,  # x, y, z vel
+                false, false, true,   # x, y, z ori
+                false, false, true]   # x, y, z ang vel
+  imu0_differential: false
+  imu0_remove_gravitational_acceleration: true
+
+  use_control: false
+
+
+
+================================================
+File: config/global_costmap_params.yaml
+================================================
+global_costmap:
+  update_frequency: 2.5
+  publish_frequency: 2.5
+  transform_tolerance: 2.1
+  static_map: true
+  rolling_window: false 
+  width: 10
+  height: 10
+  origin_x: -7.5
+  origin_y: -7.5
+  resolution: 0.1
+  inflation_radius: 2.5
+
+  
+ 
+
+
+================================================
+File: config/local_costmap_params.yaml
+================================================
+local_costmap:
+  update_frequency: 5
+  publish_frequency: 5
+  transform_tolerance: 1.25
+  static_map: false
+  rolling_window: true
+  width: 3
+  height: 3
+  origin_x: -1.5
+  origin_y: -1.5
+  resolution: 0.1
+  inflation_radius: 0.6
+
+  
+
+
+================================================
+File: config/rplidar_filter.yaml
+================================================
+scan_filter_chain:
+  - name: angle_filter
+    type: laser_filters/ScanAngleFilter
+    params:
+      lower_angle: -1.5708  # -90 degrees
+      upper_angle: 1.5708   # 90 degrees
+
+  - name: range_filter
+    type: laser_filters/ScanRangeFilter
+    params:
+      lower_threshold: 3.0
+      upper_threshold: 7.5
+
+
+
+================================================
+File: config/trajectory_planner.yaml
+================================================
+TrajectoryPlannerROS:
+  max_vel_x: 1
+  min_vel_x: 0.5
+  max_vel_theta: 0.35
+  min_vel_theta: -0.35
+  min_in_place_vel_theta: 0.25
+
+  acc_lim_theta: 0.25
+  acc_lim_X: 2.5
+  acc_lim_Y: 2.5
+  
+  holonomic_robot: false
+  meter_scoring: true
+
+  xy_goal_tolerance: 0.5
+  yaw_goal_tolerance: 1
+  
+
+
+
+================================================
+File: launch/lane.launch
+================================================
+<launch>
+  <!-- Launch lane detection node -->
+  <node pkg="ashwini" type="lane_detection.py" name="lane_detection" output="screen" />
+
+  <!-- Launch lane follower node -->
+  <node pkg="ashwini" type="lane_follower.py" name="lane_follower" output="screen">
+    <!-- You can adjust parameters here -->
+
+  </node>
+</launch>
+
+
+================================================
+File: launch/move_base.launch
+================================================
+<?xml version="1.0"?>
+<launch>
+
+    <node pkg="gmapping" type="slam_gmapping" name="maping_node">
+        <param name="base_frame" value="base_link" />
+        <param name="odom_frame" value="odom" />
+        <param name="delta" value="0.1" />
+    </node>
+
+    <node pkg="move_base" type="move_base" name="Base_move" output="screen">
+        <param name="controller_frequency" value="10.0" />
+        <rosparam file="$(find ashwini)/config/trajectory_planner.yaml" command="load" />
+        <rosparam file="$(find ashwini)/config/costmap_common_params.yaml" command="load" ns="global_costmap"/>
+        <rosparam file="$(find ashwini)/config/costmap_common_params.yaml" command="load" ns="local_costmap"/>
+        <rosparam file="$(find ashwini)/config/local_costmap_params.yaml" command="load" />
+        <rosparam file="$(find ashwini)/config/global_costmap_params.yaml" command="load" />
+    </node>
+
+</launch>
+
+
+================================================
+File: launch/real.launch
+================================================
+<?xml version="1.0" encoding="UTF-8"?>
+
+<launch>
+	<arg name="robot_name" default="ashwini"/>
+
+	<include file="$(find ashwini)/launch/robot_description.launch"/>
+	<include file="$(find ashwini)/launch/move_base.launch"/>
+
+	<node name="rviz" pkg="rviz" type="rviz" respawn="false"
+		args="-d $(find ashwini)/rviz/real.rviz"/>
+
+	<node pkg="rplidar_ros" type="rplidarNode" name="rplidarNode" output="screen">
+		<param name="serial_port" value="/dev/ttyUSB0"/>
+		<param name="serial_baudrate" value="256000"/>
+		<param name="frame_id" value="hokuyo"/>
+		<param name="angle_compensate" type="bool" value="true"/>
+    </node>
+
+	<rosparam command="load" file="$(find ashwini)/config/laser_filter.yaml" />
+	<node pkg="laser_filters" type="scan_to_scan_filter_chain" name="scan_filter" />
+
+	<node pkg="robot_localization" type="ekf_localization_node" name="ekf_filter_node" output="screen">
+		<rosparam file="$(find ashwini)/config/ekf.yaml" command="load" />
+	</node>
+
+	<node pkg="ashwini" type="imu.py" name="imu_node" output="screen"/>
+
+	<node pkg="ashwini" type="camera_publisher.py" name="camera_node" output="screen"/>
+
+    
+</launch>
+
+
+
+================================================
+File: launch/robot_description.launch
+================================================
+<?xml version="1.0"?>
+<launch>
+
+    <!-- send urdf to param server -->
+    <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find ashwini)/urdf/ashwini.xacro'" />
+
+    <!-- Send fake joint values-->
+    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+        <param name="use_gui" value="false"/>
+        <param name="publish_default_positions" value="true"/>
+    </node>
+
+    <!-- Send robot states to tf -->
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="false" output="screen">
+	    <param name="publish_frequency" type="double" value="50.0" />
+	</node>
+
+</launch>
+
+
+
+================================================
+File: launch/simulation.launch
+================================================
+<?xml version="1.0" encoding="UTF-8"?>
+
+<launch>
+	<arg name="robot_name" default="ashwini"/>
+
+	<include file="$(find ashwini)/launch/robot_description.launch"/>
+	<include file="$(find ashwini)/launch/move_base.launch"/>
+	
+	<arg name="world_file" default="$(find ashwini)/worlds/empty.world"/>
+
+	<include file="$(find gazebo_ros)/launch/empty_world.launch">
+		<arg name="use_sim_time" value="true"/>
+		<arg name="verbose" value="false"/>
+		<arg name="debug" value="false"/>
+		<arg name="gui" value="true" />
+		<arg name="world_name" value="$(arg world_file)"/>
+	</include>
+	
+	<node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
+		args="-urdf -param robot_description -model ashwini
+			  -x 6 -y 4 -z 0.23
+			  -R 0 -P 0 -Y 0"/>
+
+	<node name="rviz" pkg="rviz" type="rviz" respawn="false"
+		args="-d $(find ashwini)/rviz/default.rviz"/>
+
+	<node name="spawn_lane_overlay" pkg="gazebo_ros" type="spawn_model" output="screen"
+	args="-file $(find ashwini)/models/lane_overlay/model.sdf -sdf -model lane_overlay -x 0 -y 0 -z 0.01"/>
+	
+	<!-- <node pkg="ashwini" type="imu.py" name="imu_node" output="screen"/> -->
+
+</launch>
+
+
+
+================================================
+File: launch/suryatest.launch
+================================================
+<launch>
+
+	<arg name="robot_name" default="ashwini"/>
+
+	<include file="$(find ashwini)/launch/robot_description.launch"/>
+	<include file="$(find ashwini)/launch/move_base.launch"/>
+
+	<node name="rviz" pkg="rviz" type="rviz" respawn="false"
+		args="-d $(find ashwini)/rviz/real.rviz"/>
+
+	<node pkg="rplidar_ros" type="rplidarNode" name="rplidarNode" output="screen">
+		<param name="serial_port" value="/dev/ttyUSB0"/>
+		<param name="serial_baudrate" value="256000"/>
+		<param name="frame_id" value="hokuyo"/>
+		<param name="angle_compensate" type="bool" value="true"/>
+    </node>
+
+	<rosparam command="load" file="$(find ashwini)/config/rplidar_filter.yaml" />
+	<node pkg="laser_filters" type="scan_to_scan_filter_chain" name="scan_filter" />
+
+	<node pkg="robot_localization" type="ekf_localization_node" name="ekf_filter_node" output="screen">
+		<rosparam file="$(find ashwini)/config/ekf.yaml" command="load" />
+	</node>
+
+	<node pkg="ashwini" type="imu.py" name="imu_node" output="screen"/>
+
+	<!-- <node pkg="ashwini" type="camera_publisher.py" name="camera_node" output="screen"/> -->
+
+  <node pkg="ashwini" type="motor_serial.py" name="tungtungtungsahur" output="screen"/>
+
+</launch>
+
+
+
+
+================================================
+File: rviz/default.rviz
+================================================
+Panels:
+  - Class: rviz/Displays
+    Help Height: 78
+    Name: Displays
+    Property Tree Widget:
+      Expanded:
+        - /Imu1
+      Splitter Ratio: 0.5058823823928833
+    Tree Height: 531
+  - Class: rviz/Selection
+    Name: Selection
+  - Class: rviz/Tool Properties
+    Expanded:
+      - /2D Pose Estimate1
+      - /2D Nav Goal1
+      - /Publish Point1
+    Name: Tool Properties
+    Splitter Ratio: 0.5886790156364441
+  - Class: rviz/Views
+    Expanded:
+      - /Current View1
+    Name: Views
+    Splitter Ratio: 0.5
+  - Class: rviz/Time
+    Name: Time
+    SyncMode: 0
+    SyncSource: LaserScan
+Preferences:
+  PromptSaveOnExit: true
+Toolbars:
+  toolButtonStyle: 2
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Alpha: 0.5
+      Cell Size: 1
+      Class: rviz/Grid
+      Color: 160; 160; 164
+      Enabled: true
+      Line Style:
+        Line Width: 0.029999999329447746
+        Value: Lines
+      Name: Grid
+      Normal Cell Count: 0
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Plane: XY
+      Plane Cell Count: 100
+      Reference Frame: <Fixed Frame>
+      Value: true
+    - Class: rviz/Camera
+      Enabled: true
+      Image Rendering: background and overlay
+      Image Topic: /ashwini/camera/rgb/image_raw
+      Name: Camera
+      Overlay Alpha: 0.5
+      Queue Size: 2
+      Transport Hint: raw
+      Unreliable: false
+      Value: true
+      Visibility:
+        Grid: true
+        Imu: true
+        LaserScan: true
+        Map: true
+        Path: true
+        RobotModel: true
+        TF: true
+        Value: true
+      Zoom Factor: 1
+    - Alpha: 1
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds:
+        Max Value: 10
+        Min Value: -10
+        Value: true
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz/LaserScan
+      Color: 255; 255; 255
+      Color Transformer: Intensity
+      Decay Time: 0
+      Enabled: true
+      Invert Rainbow: false
+      Max Color: 255; 255; 255
+      Min Color: 0; 0; 0
+      Name: LaserScan
+      Position Transformer: XYZ
+      Queue Size: 10
+      Selectable: true
+      Size (Pixels): 3
+      Size (m): 0.009999999776482582
+      Style: Flat Squares
+      Topic: /scan
+      Unreliable: false
+      Use Fixed Frame: true
+      Use rainbow: true
+      Value: true
+    - Alpha: 1
+      Class: rviz/RobotModel
+      Collision Enabled: false
+      Enabled: true
+      Links:
+        All Links Enabled: true
+        Expand Joint Details: false
+        Expand Link Details: false
+        Expand Tree: false
+        Link Tree Style: Links in Alphabetic Order
+        base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        camera:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        hokuyo:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        imu_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        left_castor_dummy_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        left_castor_mount_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        left_castor_wheel_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        left_drive_wheel_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        right_castor_dummy_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        right_castor_mount_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        right_castor_wheel_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        right_drive_wheel_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+      Name: RobotModel
+      Robot Description: robot_description
+      TF Prefix: ""
+      Update Interval: 0
+      Value: true
+      Visual Enabled: true
+    - Class: rviz/TF
+      Enabled: false
+      Filter (blacklist): ""
+      Filter (whitelist): ""
+      Frame Timeout: 15
+      Frames:
+        All Enabled: true
+      Marker Alpha: 1
+      Marker Scale: 1
+      Name: TF
+      Show Arrows: true
+      Show Axes: true
+      Show Names: true
+      Tree:
+        {}
+      Update Interval: 0
+      Value: false
+    - Alpha: 1
+      Buffer Length: 1
+      Class: rviz/Path
+      Color: 206; 92; 0
+      Enabled: true
+      Head Diameter: 0.30000001192092896
+      Head Length: 0.20000000298023224
+      Length: 0.30000001192092896
+      Line Style: Lines
+      Line Width: 0.029999999329447746
+      Name: Path
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Pose Color: 255; 85; 255
+      Pose Style: None
+      Queue Size: 10
+      Radius: 0.029999999329447746
+      Shaft Diameter: 0.10000000149011612
+      Shaft Length: 0.10000000149011612
+      Topic: /Base_move/TrajectoryPlannerROS/local_plan
+      Unreliable: false
+      Value: true
+    - Alpha: 1
+      Buffer Length: 1
+      Class: rviz/Path
+      Color: 9; 8; 67
+      Enabled: true
+      Head Diameter: 0.30000001192092896
+      Head Length: 0.20000000298023224
+      Length: 0.30000001192092896
+      Line Style: Lines
+      Line Width: 0.029999999329447746
+      Name: Path
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Pose Color: 255; 85; 255
+      Pose Style: None
+      Queue Size: 10
+      Radius: 0.029999999329447746
+      Shaft Diameter: 0.10000000149011612
+      Shaft Length: 0.10000000149011612
+      Topic: /Base_move/TrajectoryPlannerROS/global_plan
+      Unreliable: false
+      Value: true
+    - Alpha: 0.699999988079071
+      Class: rviz/Map
+      Color Scheme: map
+      Draw Behind: true
+      Enabled: true
+      Name: Map
+      Topic: /map
+      Unreliable: false
+      Use Timestamp: false
+      Value: true
+    - Alpha: 0.699999988079071
+      Class: rviz/Map
+      Color Scheme: costmap
+      Draw Behind: false
+      Enabled: true
+      Name: Map
+      Topic: /Base_move/global_costmap/costmap
+      Unreliable: false
+      Use Timestamp: false
+      Value: true
+    - Alpha: 0.699999988079071
+      Class: rviz/Map
+      Color Scheme: raw
+      Draw Behind: false
+      Enabled: true
+      Name: Map
+      Topic: /Base_move/local_costmap/costmap
+      Unreliable: false
+      Use Timestamp: false
+      Value: true
+  Enabled: true
+  Global Options:
+    Background Color: 48; 48; 48
+    Default Light: true
+    Fixed Frame: map
+    Frame Rate: 60
+  Name: root
+  Tools:
+    - Class: rviz/Interact
+      Hide Inactive Objects: true
+    - Class: rviz/MoveCamera
+    - Class: rviz/Select
+    - Class: rviz/FocusCamera
+    - Class: rviz/Measure
+    - Class: rviz/SetInitialPose
+      Theta std deviation: 0.2617993950843811
+      Topic: /initialpose
+      X std deviation: 0.5
+      Y std deviation: 0.5
+    - Class: rviz/SetGoal
+      Topic: /move_base_simple/goal
+    - Class: rviz/PublishPoint
+      Single click: true
+      Topic: /clicked_point
+  Value: true
+  Views:
+    Current:
+      Class: rviz/Orbit
+      Distance: 32.96086883544922
+      Enable Stereo Rendering:
+        Stereo Eye Separation: 0.05999999865889549
+        Stereo Focal Distance: 1
+        Swap Stereo Eyes: false
+        Value: false
+      Field of View: 0.7853981852531433
+      Focal Point:
+        X: 7.145931243896484
+        Y: 2.9171111583709717
+        Z: -0.09273505210876465
+      Focal Shape Fixed Size: true
+      Focal Shape Size: 0.05000000074505806
+      Invert Z Axis: false
+      Name: Current View
+      Near Clip Distance: 0.009999999776482582
+      Pitch: 0.5297966599464417
+      Target Frame: <Fixed Frame>
+      Yaw: 2.9867522716522217
+    Saved: ~
+Window Geometry:
+  Camera:
+    collapsed: false
+  Displays:
+    collapsed: false
+  Height: 1016
+  Hide Left Dock: false
+  Hide Right Dock: false
+  QMainWindow State: 000000ff00000000fd0000000400000000000001560000035afc0200000009fb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005c00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000003d0000029e000000c900fffffffb0000000c00430061006d00650072006101000002e1000000b60000001600fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261000000010000010f0000035afc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073010000003d0000035a000000a400fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000007380000003efc0100000002fb0000000800540069006d0065010000000000000738000003bc00fffffffb0000000800540069006d00650100000000000004500000000000000000000004c70000035a00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  Selection:
+    collapsed: false
+  Time:
+    collapsed: false
+  Tool Properties:
+    collapsed: false
+  Views:
+    collapsed: false
+  Width: 1848
+  X: 72
+  Y: 27
+
+
+
+================================================
+File: rviz/real.rviz
+================================================
+Panels:
+  - Class: rviz/Displays
+    Help Height: 78
+    Name: Displays
+    Property Tree Widget:
+      Expanded:
+        - /Global Options1
+        - /Imu1
+      Splitter Ratio: 0.5058823823928833
+    Tree Height: 531
+  - Class: rviz/Selection
+    Name: Selection
+  - Class: rviz/Tool Properties
+    Expanded:
+      - /2D Pose Estimate1
+      - /2D Nav Goal1
+      - /Publish Point1
+    Name: Tool Properties
+    Splitter Ratio: 0.5886790156364441
+  - Class: rviz/Views
+    Expanded:
+      - /Current View1
+    Name: Views
+    Splitter Ratio: 0.5
+  - Class: rviz/Time
+    Name: Time
+    SyncMode: 0
+    SyncSource: LaserScan
+Preferences:
+  PromptSaveOnExit: true
+Toolbars:
+  toolButtonStyle: 2
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Alpha: 0.5
+      Cell Size: 1
+      Class: rviz/Grid
+      Color: 160; 160; 164
+      Enabled: true
+      Line Style:
+        Line Width: 0.029999999329447746
+        Value: Lines
+      Name: Grid
+      Normal Cell Count: 0
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Plane: XY
+      Plane Cell Count: 100
+      Reference Frame: <Fixed Frame>
+      Value: true
+    - Class: rviz/Camera
+      Enabled: true
+      Image Rendering: background and overlay
+      Image Topic: /ashwini/camera/rgb/image_raw
+      Name: Camera
+      Overlay Alpha: 0.5
+      Queue Size: 2
+      Transport Hint: raw
+      Unreliable: false
+      Value: true
+      Visibility:
+        Grid: true
+        Imu: true
+        LaserScan: true
+        Map: true
+        Path: true
+        RobotModel: true
+        TF: true
+        Value: true
+      Zoom Factor: 1
+    - Alpha: 1
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds:
+        Max Value: 10
+        Min Value: -10
+        Value: true
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz/LaserScan
+      Color: 255; 255; 255
+      Color Transformer: Intensity
+      Decay Time: 0
+      Enabled: true
+      Invert Rainbow: false
+      Max Color: 255; 255; 255
+      Min Color: 0; 0; 0
+      Name: LaserScan
+      Position Transformer: XYZ
+      Queue Size: 10
+      Selectable: true
+      Size (Pixels): 3
+      Size (m): 0.009999999776482582
+      Style: Flat Squares
+      Topic: /scan
+      Unreliable: false
+      Use Fixed Frame: true
+      Use rainbow: true
+      Value: true
+    - Alpha: 1
+      Class: rviz/RobotModel
+      Collision Enabled: false
+      Enabled: true
+      Links:
+        All Links Enabled: true
+        Expand Joint Details: false
+        Expand Link Details: false
+        Expand Tree: false
+        Link Tree Style: Links in Alphabetic Order
+        base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        camera:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        hokuyo:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        imu:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        left_castor_dummy_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        left_castor_mount_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        left_castor_wheel_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        left_drive_wheel_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        odom:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        right_castor_dummy_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        right_castor_mount_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        right_castor_wheel_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        right_drive_wheel_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+      Name: RobotModel
+      Robot Description: robot_description
+      TF Prefix: ""
+      Update Interval: 0
+      Value: true
+      Visual Enabled: true
+    - Class: rviz/TF
+      Enabled: false
+      Filter (blacklist): ""
+      Filter (whitelist): ""
+      Frame Timeout: 15
+      Frames:
+        All Enabled: true
+      Marker Alpha: 1
+      Marker Scale: 1
+      Name: TF
+      Show Arrows: true
+      Show Axes: true
+      Show Names: true
+      Tree:
+        {}
+      Update Interval: 0
+      Value: false
+    - Alpha: 1
+      Buffer Length: 1
+      Class: rviz/Path
+      Color: 206; 92; 0
+      Enabled: true
+      Head Diameter: 0.30000001192092896
+      Head Length: 0.20000000298023224
+      Length: 0.30000001192092896
+      Line Style: Lines
+      Line Width: 0.029999999329447746
+      Name: Path
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Pose Color: 255; 85; 255
+      Pose Style: None
+      Queue Size: 10
+      Radius: 0.029999999329447746
+      Shaft Diameter: 0.10000000149011612
+      Shaft Length: 0.10000000149011612
+      Topic: /Base_move/TrajectoryPlannerROS/local_plan
+      Unreliable: false
+      Value: true
+    - Alpha: 1
+      Buffer Length: 1
+      Class: rviz/Path
+      Color: 9; 8; 67
+      Enabled: true
+      Head Diameter: 0.30000001192092896
+      Head Length: 0.20000000298023224
+      Length: 0.30000001192092896
+      Line Style: Lines
+      Line Width: 0.029999999329447746
+      Name: Path
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Pose Color: 255; 85; 255
+      Pose Style: None
+      Queue Size: 10
+      Radius: 0.029999999329447746
+      Shaft Diameter: 0.10000000149011612
+      Shaft Length: 0.10000000149011612
+      Topic: /Base_move/TrajectoryPlannerROS/global_plan
+      Unreliable: false
+      Value: true
+    - Alpha: 0.699999988079071
+      Class: rviz/Map
+      Color Scheme: map
+      Draw Behind: true
+      Enabled: true
+      Name: Map
+      Topic: /map
+      Unreliable: false
+      Use Timestamp: false
+      Value: true
+    - Alpha: 0.699999988079071
+      Class: rviz/Map
+      Color Scheme: costmap
+      Draw Behind: false
+      Enabled: true
+      Name: Map
+      Topic: /Base_move/global_costmap/costmap
+      Unreliable: false
+      Use Timestamp: false
+      Value: true
+    - Alpha: 0.699999988079071
+      Class: rviz/Map
+      Color Scheme: raw
+      Draw Behind: false
+      Enabled: true
+      Name: Map
+      Topic: /Base_move/local_costmap/costmap
+      Unreliable: false
+      Use Timestamp: false
+      Value: true
+    - Alpha: 1
+      Class: rviz_plugin_tutorials/Imu
+      Color: 204; 51; 204
+      Enabled: true
+      History Length: 1
+      Name: Imu
+      Queue Size: 10
+      Topic: /imu/data
+      Unreliable: false
+      Value: true
+  Enabled: true
+  Global Options:
+    Background Color: 48; 48; 48
+    Default Light: true
+    Fixed Frame: map
+    Frame Rate: 60
+  Name: root
+  Tools:
+    - Class: rviz/Interact
+      Hide Inactive Objects: true
+    - Class: rviz/MoveCamera
+    - Class: rviz/Select
+    - Class: rviz/FocusCamera
+    - Class: rviz/Measure
+    - Class: rviz/SetInitialPose
+      Theta std deviation: 0.2617993950843811
+      Topic: /initialpose
+      X std deviation: 0.5
+      Y std deviation: 0.5
+    - Class: rviz/SetGoal
+      Topic: /move_base_simple/goal
+    - Class: rviz/PublishPoint
+      Single click: true
+      Topic: /clicked_point
+  Value: true
+  Views:
+    Current:
+      Class: rviz/Orbit
+      Distance: 38.24594497680664
+      Enable Stereo Rendering:
+        Stereo Eye Separation: 0.05999999865889549
+        Stereo Focal Distance: 1
+        Swap Stereo Eyes: false
+        Value: false
+      Field of View: 0.7853981852531433
+      Focal Point:
+        X: 5.44964599609375
+        Y: 1.3938180208206177
+        Z: -3.0869882106781006
+      Focal Shape Fixed Size: true
+      Focal Shape Size: 0.05000000074505806
+      Invert Z Axis: false
+      Name: Current View
+      Near Clip Distance: 0.009999999776482582
+      Pitch: 0.5147968530654907
+      Target Frame: <Fixed Frame>
+      Yaw: 3.246746063232422
+    Saved: ~
+Window Geometry:
+  Camera:
+    collapsed: false
+  Displays:
+    collapsed: false
+  Height: 1016
+  Hide Left Dock: false
+  Hide Right Dock: false
+  QMainWindow State: 000000ff00000000fd0000000400000000000001560000035afc0200000009fb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005c00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000003d0000029e000000c900fffffffb0000000c00430061006d00650072006101000002e1000000b60000001600fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261000000010000010f0000035afc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073010000003d0000035a000000a400fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000007380000003efc0100000002fb0000000800540069006d0065010000000000000738000003bc00fffffffb0000000800540069006d00650100000000000004500000000000000000000004c70000035a00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  Selection:
+    collapsed: false
+  Time:
+    collapsed: false
+  Tool Properties:
+    collapsed: false
+  Views:
+    collapsed: false
+  Width: 1848
+  X: 72
+  Y: 27
+
+
+
+================================================
+File: script/camera_publisher.py
+================================================
+#!/usr/bin/env python3
+import rospy
+import cv2
+from sensor_msgs.msg import Image, CameraInfo
+from cv_bridge import CvBridge, CvBridgeError
+
+def get_dummy_camera_info(width=640, height=480):
+    info = CameraInfo()
+    info.width = width
+    info.height = height
+    info.K = [525, 0, width / 2,
+              0, 525, height / 2,
+              0, 0, 1]
+    info.P = [525, 0, width / 2, 0,
+              0, 525, height / 2, 0,
+              0, 0, 1, 0]
+    info.R = [1, 0, 0,
+              0, 1, 0,
+              0, 0, 1]
+    info.D = [0, 0, 0, 0, 0]
+    info.distortion_model = "plumb_bob"
+    return info
+
+def main():
+    rospy.init_node('camera_publisher', anonymous=True)
+
+    image_pub = rospy.Publisher('/ashwini/camera/rgb/image_raw', Image, queue_size=10)
+    info_pub = rospy.Publisher('/ashwini/camera/rgb/camera_info', CameraInfo, queue_size=10)
+
+    bridge = CvBridge()
+    cap = cv2.VideoCapture(2)  # Use 1 if external camera
+
+    if not cap.isOpened():
+        rospy.logerr("Error: Cannot open camera.")
+        return
+
+    # Get width and height of the frame
+    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    camera_info = get_dummy_camera_info(width, height)
+
+    rate = rospy.Rate(30)
+
+    while not rospy.is_shutdown():
+        ret, frame = cap.read()
+        if ret:
+            try:
+                img_msg = bridge.cv2_to_imgmsg(frame, "bgr8")
+                timestamp = rospy.Time.now()
+
+                img_msg.header.stamp = timestamp
+                img_msg.header.frame_id = "camera"
+
+                camera_info.header.stamp = timestamp
+                camera_info.header.frame_id = "camera"
+
+                image_pub.publish(img_msg)
+                info_pub.publish(camera_info)
+            except CvBridgeError as e:
+                rospy.logerr("CvBridge Error: %s", e)
+        else:
+            rospy.logwarn("Failed to capture image from camera.")
+        
+        rate.sleep()
+
+    cap.release()
+
+if __name__ == '__main__':
+    try:
+        main()
+    except rospy.ROSInterruptException:
+        pass
+
+
+================================================
+File: script/imu.py
+================================================
+#!/usr/bin/env python3
+import rospy
+import tf
+from sensor_msgs.msg import Imu
+from nav_msgs.msg import Odometry
+from geometry_msgs.msg import Twist, PoseWithCovariance, TwistWithCovariance
+import subprocess
+import serial.tools.list_ports
+import threading
+
+# ✅ Your Arduino IMU's serial number
+IMU_SERIAL_NUMBER = "343313236353516030E1"
+
+class IMUOdometry:
+    def __init__(self):
+        # Initialize publishers
+        self.odom_pub = rospy.Publisher('/odom', Odometry, queue_size=10)
+        self.twist_pub = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
+        
+        # Initialize odometry message
+        self.odom = Odometry()
+        self.odom.header.frame_id = "odom"
+        self.odom.child_frame_id = "base_link"
+        self.odom.pose = PoseWithCovariance()
+        self.odom.twist = TwistWithCovariance()
+        
+        # TF broadcaster
+        # self.tf_broadcaster = tf.TransformBroadcaster()
+
+    def publish_odometry(self, imu_msg):
+        # Populate odometry message from IMU data
+        self.odom.header.stamp = rospy.Time.now()
+        
+        # Orientation from IMU
+        self.odom.pose.pose.orientation = imu_msg.orientation
+        
+        # Angular velocity (for twist)
+        self.odom.twist.twist.angular = imu_msg.angular_velocity
+        
+        # Publish odometry
+        self.odom_pub.publish(self.odom)
+        
+        # Publish TF transform (odom → base_link)
+        # self.tf_broadcaster.sendTransform(
+        #     (0, 0, 0),  # No position data from IMU
+        #     (
+        #         imu_msg.orientation.x,
+        #         imu_msg.orientation.y,
+        #         imu_msg.orientation.z,
+        #         imu_msg.orientation.w
+        #     ),
+        #     rospy.Time.now(),
+        #     "base_link",
+        #     "odom"
+        # )
+
+def find_port_by_serial(serial_number):
+    ports = serial.tools.list_ports.comports()
+    for port in ports:
+        if port.serial_number == serial_number:
+            print(f"✅ Found Arduino with serial {serial_number} on port: {port.device}")
+            return port.device
+    print(f"❌ Arduino with serial {serial_number} not found.")
+    return None
+
+def run_arduino_imu_node(arduino_port):
+    try:
+        process = subprocess.Popen([
+            "rosrun", 
+            "rosserial_python", 
+            "serial_node.py", 
+            f"_port:={arduino_port}", 
+            "_baud:=115200"
+        ])
+        print("🚀 IMU rosserial node started.")
+        return process
+    except Exception as e:
+        print(f"❌ Failed to start rosserial node: {e}")
+        return None
+
+def imu_callback(msg, odom_handler):
+    # Publish odometry and TF
+    odom_handler.publish_odometry(msg)
+    
+    # Publish twist if needed (optional)
+    twist = Twist()
+    twist.angular.z = msg.angular_velocity.z
+    odom_handler.twist_pub.publish(twist)
+
+if __name__ == "__main__":
+    arduino_port = find_port_by_serial(IMU_SERIAL_NUMBER)
+    if not arduino_port:
+        exit(1)
+
+    # Start rosserial as background process
+    rosserial_process = run_arduino_imu_node(arduino_port)
+    if not rosserial_process:
+        exit(1)
+
+    try:
+        rospy.init_node('imu_odometry_node')
+        odom_handler = IMUOdometry()
+        
+        # Set covariance values (adjust based on your IMU's specs)
+        odom_handler.odom.pose.covariance = [0.01]*36  # Position covariance
+        odom_handler.odom.twist.covariance = [0.01]*36  # Velocity covariance
+        
+        rospy.Subscriber('/imu/data', Imu, imu_callback, odom_handler)
+        rospy.loginfo("IMU Odometry node started!")
+        rospy.spin()
+        
+    except KeyboardInterrupt:
+        print("🛑 Shutting down...")
+    finally:
+        if rosserial_process:
+            rosserial_process.terminate()
+            rosserial_process.wait()
+
+
+================================================
+File: script/lane_detection.py
+================================================
+#!/usr/bin/env python3
+import rospy
+import cv2
+import numpy as np
+from sensor_msgs.msg import Image
+from std_msgs.msg import Float32
+from cv_bridge import CvBridge, CvBridgeError
+
+class LaneDetector:
+    def __init__(self):
+        rospy.init_node('lane_detector', anonymous=True)
+        self.bridge = CvBridge()
+        self.image_sub = rospy.Subscriber("/ashwini/camera/rgb/image_raw", Image, self.image_callback)
+        self.offset_pub = rospy.Publisher("/lane_offset", Float32, queue_size=10)
+        rospy.loginfo("Lane Detector initialized using ROI + Contour + Centroid method")
+
+    def image_callback(self, data):
+        try:
+            frame = self.bridge.imgmsg_to_cv2(data, "bgr8")
+        except CvBridgeError as e:
+            rospy.logerr(f"CV Bridge Error: {e}")
+            return
+
+        height, width, _ = frame.shape
+
+        # 1. Crop ROI (bottom quarter of image)
+        roi = frame[int(height * 0.2):, :]
+
+        # 2. Convert to HSV and threshold for white lanes
+        hsv = cv2.cvtColor(roi, cv2.COLOR_BGR2HSV)
+        lower_white = np.array([0, 0, 200])
+        upper_white = np.array([180, 55, 255])
+        mask = cv2.inRange(hsv, lower_white, upper_white)
+
+        # 3. Find contours
+        contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+        centroids = []
+        for cnt in contours:
+            area = cv2.contourArea(cnt)
+            if area > 300:  # ignore small noise
+                M = cv2.moments(cnt)
+                if M["m00"] != 0:
+                    cx = int(M["m10"] / M["m00"])
+                    cy = int(M["m01"] / M["m00"])
+                    centroids.append((cx, cy))
+                    # Draw for debug
+                    cv2.circle(roi, (cx, cy), 5, (0, 255, 0), -1)
+
+        # 4. Find left and right lane centroids
+        if len(centroids) >= 2:
+            centroids = sorted(centroids, key=lambda x: x[0])  # sort by x
+            left_lane = centroids[0]
+            right_lane = centroids[-1]
+            lane_center = (left_lane[0] + right_lane[0]) // 2
+            image_center = width // 2
+            error = image_center - lane_center
+            self.offset_pub.publish(Float32(error))
+
+            # Draw info
+            cv2.line(roi, (lane_center, 0), (lane_center, roi.shape[0]), (255, 0, 0), 2)
+            cv2.line(roi, (image_center, 0), (image_center, roi.shape[0]), (0, 0, 255), 2)
+            rospy.loginfo(f"Lane center: {lane_center}, Error: {error}")
+        else:
+            rospy.logwarn("Did not find two lane lines")
+
+        # Show for debug
+        cv2.imshow("Lane ROI", roi)
+        cv2.imshow("Mask", mask)
+        cv2.waitKey(1)
+
+    def run(self):
+        rospy.spin()
+        cv2.destroyAllWindows()
+
+
+if __name__ == '__main__':
+    try:
+        detector = LaneDetector()
+        detector.run()
+    except rospy.ROSInterruptException:
+        pass
+
+
+
+================================================
+File: script/lane_follower.py
+================================================
+#!/usr/bin/env python3
+import rospy
+from std_msgs.msg import Float32
+from geometry_msgs.msg import Twist
+
+class LaneFollower:
+    def __init__(self):
+        rospy.init_node('lane_follower', anonymous=True)
+        # Subscriber to the lane offset error published by lane_detection
+        self.offset_sub = rospy.Subscriber("/lane_offset", Float32, self.offset_callback)
+        # Publisher to send velocity commands to the robot
+        self.cmd_vel_pub = rospy.Publisher("/cmd_vel", Twist, queue_size=10)
+        # Set parameters for controlling the robot
+        self.linear_speed = rospy.get_param("~linear_speed", 2)
+        self.angular_gain = rospy.get_param("~angular_gain", 0.005)
+        self.current_error = 0.0
+        rospy.loginfo("Lane Follower node started.")
+
+    def offset_callback(self, msg):
+        self.current_error = msg.data
+
+    def run(self):
+        rate = rospy.Rate(10)
+        while not rospy.is_shutdown():
+            twist = Twist()
+            twist.linear.x = self.linear_speed
+            # The angular velocity is proportional to the lane offset error.
+            twist.angular.z = self.angular_gain * self.current_error
+            self.cmd_vel_pub.publish(twist)
+            rate.sleep()
+
+if __name__ == '__main__':
+    try:
+        lane_follower = LaneFollower()
+        lane_follower.run()
+    except rospy.ROSInterruptException:
+        pass
+
+
+
+================================================
+File: script/motor_serial.py
+================================================
+#!/usr/bin/env python3
+
+import rospy
+from geometry_msgs.msg import Twist
+import serial
+import time
+
+class MDDS30Controller:
+    def __init__(self):
+        self.port = rospy.get_param("~port", "/dev/ttyUSB1")  # Updated to working port
+        self.baudrate = rospy.get_param("~baudrate", 9600)
+        self.wheel_base = rospy.get_param("~wheel_base", 0.61)  # meters
+        self.max_speed = rospy.get_param("~max_speed", 100.0)     # m/s
+
+        try:
+            self.ser = serial.Serial(self.port, self.baudrate, timeout=1)
+            time.sleep(2)  # Let the serial port settle
+            rospy.loginfo("Connected to MDDS30 on %s", self.port)
+        except serial.SerialException as e:
+            rospy.logerr("Could not open serial port %s: %s", self.port, str(e))
+            exit(1)
+
+        rospy.Subscriber("/cmd_vel", Twist, self.cmd_vel_callback)
+        rospy.on_shutdown(self.stop_motors)
+
+    def cmd_vel_callback(self, msg):
+        v = msg.linear.x * 300
+        w = msg.angular.z
+
+        left_speed = v - (w * self.wheel_base / 2)
+        right_speed = v + (w * self.wheel_base / 2)
+       
+        # Clamp and scale speed to range 0–63
+        left_cmd = self.make_command_byte(0, left_speed)
+        right_cmd = self.make_command_byte(1, right_speed)
+
+        # Log raw speeds and commands
+        rospy.loginfo(f"Left Speed: {left_speed:.2f} m/s → Byte: {left_cmd}")
+        rospy.loginfo(f"Right Speed: {right_speed:.2f} m/s → Byte: {right_cmd}")
+
+        try:
+            self.ser.write(bytes([left_cmd]))
+            time.sleep(0.01)
+            self.ser.write(bytes([right_cmd]))
+        except serial.SerialException as e:
+            rospy.logerr("Serial write failed: %s", str(e))
+
+    def make_command_byte(self, motor, speed):
+        # motor: 0=Left, 1=Right
+        direction = 0 if speed >= 0 else 1
+        abs_speed = abs(speed)
+        scaled = int((min(abs_speed, self.max_speed) / self.max_speed) * 63)
+        scaled = min(scaled, 63)
+        return (motor << 7) | (direction << 6) | scaled
+
+    def stop_motors(self):
+        rospy.loginfo("Stopping motors")
+        try:
+            self.ser.write(bytes([0b00000000]))  # Left stop
+            time.sleep(0.01)
+            self.ser.write(bytes([0b10000000]))  # Right stop
+        except serial.SerialException as e:
+            rospy.logerr("Failed to stop motors: %s", str(e))
+
+if __name__ == '__main__':
+    rospy.init_node('mdds30_cmdvel_controller')
+    controller = MDDS30Controller()
+    rospy.spin()
+
+
+
+================================================
+File: script/move_around.py
+================================================
+#!/usr/bin/env python3
+
+import rospy
+from sensor_msgs.msg import LaserScan
+from geometry_msgs.msg import Twist
+
+class MoveAroundObstacle:
+    def __init__(self):
+        rospy.init_node('move_around_obstacle', anonymous=True)
+        
+        self.cmd_pub = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
+        rospy.Subscriber('/scan', LaserScan, self.scan_callback)
+        
+        self.twist = Twist()
+        self.obstacle_threshold = 1  # Stop if an obstacle is closer than 0.5m
+        self.safe_to_move = True
+
+        self.navigate()
+
+    def scan_callback(self, msg):
+        min_distance = min(msg.ranges)  # Get closest object
+        rospy.loginfo(f"Min Distance: {min_distance:.2f}m")
+
+        if min_distance < self.obstacle_threshold:
+            self.safe_to_move = False  # Start turning
+        else:
+            self.safe_to_move = True  # Move forward
+
+    def navigate(self):
+        rate = rospy.Rate(10)  # 10 Hz
+        while not rospy.is_shutdown():
+            if self.safe_to_move:
+                self.twist.linear.x = 0.2  # Move forward
+                self.twist.angular.z = 0.0  # No rotation
+            else:
+                self.twist.linear.x = 0.0  # Stop moving forward
+                self.twist.angular.z = 0.5  # Turn left
+            
+            self.cmd_pub.publish(self.twist)
+            rate.sleep()
+
+if __name__ == '__main__':
+    try:
+        MoveAroundObstacle()
+    except rospy.ROSInterruptException:
+        pass
+
+
+
+================================================
+File: script/move_smart.py
+================================================
+#!/usr/bin/env python3
+
+import rospy
+from sensor_msgs.msg import LaserScan
+from geometry_msgs.msg import Twist
+
+class MoveStraight:
+    def __init__(self):
+        rospy.init_node('move_straight', anonymous=True)
+        
+        self.cmd_pub = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
+        rospy.Subscriber('/scan', LaserScan, self.scan_callback)
+        
+        self.twist = Twist()
+        self.obstacle_threshold = 0.5  # Stop if an obstacle is closer than 0.5m
+        self.safe_to_move = True
+
+        self.move_forward()
+
+    def scan_callback(self, msg):
+        min_distance = min(msg.ranges)  # Get closest object
+        rospy.loginfo(f"Min Distance: {min_distance:.2f}m")
+
+        if min_distance < self.obstacle_threshold:
+            self.safe_to_move = False  # Stop moving
+        else:
+            self.safe_to_move = True  # Continue moving
+
+    def move_forward(self):
+        rate = rospy.Rate(10)  # 10 Hz
+        while not rospy.is_shutdown():
+            if self.safe_to_move:
+                self.twist.linear.x = 100
+                print("chala jaa bsdk")  # Move forward
+            else:
+                self.twist.linear.x = 0.0
+                print("stop baby")  # Stop
+            
+            self.cmd_pub.publish(self.twist)
+            rate.sleep()
+
+if __name__ == '__main__':
+    try:
+        MoveStraight()
+    except rospy.ROSInterruptException:
+        pass
+
+
+
+================================================
+File: script/move_straight.py
+================================================
+#!/usr/bin/env python3
+import rospy
+from geometry_msgs.msg import Twist
+
+rospy.init_node("move_straight")
+pub = rospy.Publisher("/cmd_vel", Twist, queue_size=10)  # Use correct topic
+rate = rospy.Rate(10)
+
+twist = Twist()
+twist.linear.x = 0.5  # Move forward
+
+while not rospy.is_shutdown():
+    pub.publish(twist)
+    rate.sleep()
+
+
+
+
+================================================
+File: script/waypoint.py
+================================================
+#!/usr/bin/env python3
+import rospy
+from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
+import actionlib
+from tf.transformations import quaternion_from_euler
+import math
+
+class WaypointNavigator:
+    def __init__(self):
+        rospy.init_node('alligator')
+        
+        # List of waypoints (x, y, yaw_deg)
+        self.waypoints = [
+            (5.0, 5.0, 0),
+            (-5.0, 5.0, 0),
+            (-5.0, -5.0, 0),
+            (5.0, -5.0, 0)
+        ]
+        
+        self.current_waypoint_index = 0
+        self.goal_active = False
+        self.client = actionlib.SimpleActionClient('move_base', MoveBaseAction)
+        rospy.loginfo("Waiting for move_base action server...")
+        
+        # Wait for the action server to come up
+        if not self.client.wait_for_server(rospy.Duration(5.0)):
+            rospy.logerr("Could not connect to move_base server")
+            return
+            
+        rospy.loginfo("Connected to move_base server")
+        self.send_next_waypoint()
+
+    def send_next_waypoint(self):
+        if self.goal_active:
+            rospy.logwarn("Previous goal still active, not sending new waypoint")
+            return
+            
+        if self.current_waypoint_index < len(self.waypoints):
+            x, y, yaw_deg = self.waypoints[self.current_waypoint_index]
+            self.send_waypoint(x, y, yaw_deg)
+        else:
+            rospy.loginfo("All waypoints completed!")
+
+    def send_waypoint(self, x, y, yaw_deg=0):
+        goal = MoveBaseGoal()
+        goal.target_pose.header.frame_id = "map"
+        goal.target_pose.header.stamp = rospy.Time.now()
+
+        goal.target_pose.pose.position.x = x
+        goal.target_pose.pose.position.y = y
+        goal.target_pose.pose.position.z = 0
+
+        yaw = math.radians(yaw_deg)
+        q = quaternion_from_euler(0, 0, yaw)
+
+        goal.target_pose.pose.orientation.x = q[0]
+        goal.target_pose.pose.orientation.y = q[1]
+        goal.target_pose.pose.orientation.z = q[2]
+        goal.target_pose.pose.orientation.w = q[3]
+
+        rospy.loginfo(f"Sending waypoint {self.current_waypoint_index + 1}: x={x}, y={y}, yaw={yaw_deg}")
+        self.goal_active = True
+        self.client.send_goal(goal, done_cb=self.goal_reached_callback)
+        self.current_waypoint_index += 1
+
+    def goal_reached_callback(self, status, result):
+        self.goal_active = False
+        
+        if status == actionlib.GoalStatus.SUCCEEDED:
+            rospy.loginfo(f"Waypoint {self.current_waypoint_index} reached!")
+        else:
+            rospy.logwarn(f"Failed to reach waypoint {self.current_waypoint_index}")
+        
+        # Use a timer to add a small delay before sending next waypoint
+        rospy.Timer(rospy.Duration(0.5), self.delayed_next_waypoint, oneshot=True)
+
+    def delayed_next_waypoint(self, event):
+        self.send_next_waypoint()
+
+if __name__ == '__main__':
+    try:
+        navigator = WaypointNavigator()
+        rospy.spin()
+    except rospy.ROSInterruptException:
+        pass
+
+
+
+================================================
+File: urdf/ashwini.gazebo
+================================================
+<?xml version="1.0"?>
+
+<robot>
+
+  <gazebo reference="base_link">
+      <material>Gazebo/Blue</material>
+  </gazebo>
+
+  <gazebo reference="left_drive_wheel_link">
+      <material>Gazebo/PurpleGlow</material>
+   	  <kp>1000000.0</kp>
+  	  <kd>10.0</kd>
+      <mu1>1.5</mu1>
+      <mu2>1.5</mu2>
+      <fdir1>1 0 0</fdir1>
+      <maxVel>1.0</maxVel>
+      <minDepth>0.00</minDepth>
+  </gazebo>
+
+  <!--  -->
+  <gazebo reference="right_drive_wheel_link">
+      <material>Gazebo/PurpleGlow</material>
+      <kp>1000000.0</kp>
+      <kd>10.0</kd>
+      <mu1>1.5</mu1>
+      <mu2>1.5</mu2>
+      <fdir1>1 0 0</fdir1>
+      <maxVel>1.0</maxVel>
+      <minDepth>0.00</minDepth>
+  </gazebo>
+
+
+  <!--  -->
+  <gazebo reference="left_castor_wheel_link">
+      <material>Gazebo/PurpleGlow</material>
+      <!--tags are from: http://gazebosim.org/tutorials/?tut=ros_urdf-->
+      <!--These values fixed the robot from bouncing side to side:
+          Problem: http://answers.gazebosim.org/question/24459/model-contact-with-ground-issue/
+          solution: see: http://answers.gazebosim.org/question/3334/slip1-slip2-in-urdf/-->
+      <kp>1000000.0</kp>
+      <kd>10.0</kd>
+      <mu1>0.0</mu1>
+      <mu2>0.0</mu2>
+      <fdir1>1 0 0</fdir1>
+      <maxVel>1.0</maxVel>
+      <minDepth>0.00</minDepth>
+  </gazebo>
+
+
+  <!--  -->
+  <gazebo reference="right_castor_wheel_link">
+      <material>Gazebo/PurpleGlow</material>
+      <!--tags are from: http://gazebosim.org/tutorials/?tut=ros_urdf-->
+      <!--These values fixed the robot from bouncing side to side:
+          Problem: http://answers.gazebosim.org/question/24459/model-contact-with-ground-issue/
+          solution: see: http://answers.gazebosim.org/question/3334/slip1-slip2-in-urdf/-->
+      <kp>1000000.0</kp>
+      <kd>10.0</kd>
+      <mu1>0.0</mu1>
+      <mu2>0.0</mu2>
+      <fdir1>1 0 0</fdir1>
+      <maxVel>1.0</maxVel>
+      <minDepth>0.00</minDepth>
+  </gazebo>
+
+  
+<!--=========================================PLUG-INS======================================-->
+
+  <!--This plugin allows us to run a diff_drive controller in Gazebo -->
+    <gazebo>
+    <plugin name="differential_drive_controller" filename="libgazebo_ros_diff_drive.so">
+      <legacyMode>false</legacyMode>
+      <alwaysOn>true</alwaysOn>
+      <updateRate>20</updateRate>
+      <leftJoint>base_to_left_drive_wheel_joint</leftJoint>
+      <rightJoint>base_to_right_drive_wheel_joint</rightJoint>
+      <wheelSeparation>0.4</wheelSeparation>
+      <wheelDiameter>0.36</wheelDiameter>
+      <torque>20</torque>
+      <commandTopic>cmd_vel</commandTopic>
+      <odometryTopic>odom</odometryTopic>
+      <odometryFrame>odom</odometryFrame>
+      <robotBaseFrame>base_link</robotBaseFrame>
+
+      <!-- Added missing parameters -->
+      <rosDebugLevel>info</rosDebugLevel>
+      <publishWheelTF>false</publishWheelTF>
+      <publishOdomTF>true</publishOdomTF>
+      <publishWheelJointState>true</publishWheelJointState>
+      <wheelAcceleration>1.0</wheelAcceleration> <!-- Adjust if needed -->
+      <wheelTorque>5.0</wheelTorque> <!-- Adjust if needed -->
+      <odometrySource>world</odometrySource> <!-- Use "encoder" if needed -->
+      <publishTf>true</publishTf>
+    </plugin>
+  </gazebo>
+
+  <!-- camera -->
+  <gazebo reference="camera">
+    <sensor type="camera" name="camera1">
+      <update_rate>60.0</update_rate>
+      <camera name="head">
+        <horizontal_fov>1.36135682</horizontal_fov>
+        <image>
+          <width>800</width>
+          <height>800</height>
+          <format>R8G8B8</format>
+        </image>
+        <clip>
+          <near>0.02</near>
+          <far>300</far>
+        </clip>
+      </camera>
+      <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+        <robotNamespace>/ashwini</robotNamespace>
+        <alwaysOn>true</alwaysOn>
+        <updateRate>0.0</updateRate>
+        <cameraName>camera</cameraName>
+        <imageTopicName>rgb/image_raw</imageTopicName>
+        <cameraInfoTopicName>rgb/camera_info</cameraInfoTopicName>
+        <frameName>camera</frameName>
+        <hackBaseline>0.07</hackBaseline>
+        <distortionK1>0.0</distortionK1>
+        <distortionK2>0.0</distortionK2>
+        <distortionK3>0.0</distortionK3>
+        <distortionT1>0.0</distortionT1>
+        <distortionT2>0.0</distortionT2>
+      </plugin>
+    </sensor>
+  </gazebo>
+
+  <!-- hokuyo -->
+  <gazebo reference="hokuyo">
+    <sensor type="ray" name="head_hokuyo_sensor">
+      <pose>0 0 0 0 0 0</pose>
+      <visualize>true</visualize>
+      <update_rate>40</update_rate>
+      <ray>
+        <scan>
+          <horizontal>
+            <samples>720</samples>
+            <resolution>1</resolution>
+            <min_angle>-1.570796</min_angle>
+            <max_angle>1.570796</max_angle>
+          </horizontal>
+        </scan>
+        <range>
+          <min>0.10</min>
+          <max>5.0</max>
+          <resolution>0.01</resolution>
+        </range>
+        <noise>
+          <type>gaussian</type>
+          <!-- Noise parameters based on published spec for Hokuyo laser
+               achieving "+-30mm" accuracy at range < 10m.  A mean of 0.0m and
+               stddev of 0.01m will put 99.7% of samples within 0.03m of the true
+               reading. -->
+          <mean>0.0</mean>
+          <stddev>0.01</stddev>
+        </noise>
+      </ray>
+      <plugin name="gazebo_ros_head_hokuyo_controller" filename="libgazebo_ros_laser.so">
+        <topicName>/scan</topicName>
+        <frameName>hokuyo</frameName>
+        <robotNamespace>/ashwini</robotNamespace>
+      </plugin>
+    </sensor>
+  </gazebo>
+
+    
+  <gazebo reference="imu_link">
+    <gravity>true</gravity>
+    <sensor name="imu_sensor" type="imu">
+      <always_on>true</always_on>
+      <update_rate>100</update_rate>
+      <visualize>true</visualize>
+      <topic>__default_topic__</topic>
+      <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
+        <topicName>imu</topicName>
+        <bodyName>imu_link</bodyName>
+        <updateRateHZ>10.0</updateRateHZ>
+        <gaussianNoise>0.0</gaussianNoise>
+        <xyzOffset>0 0 0</xyzOffset>
+        <rpyOffset>0 0 0</rpyOffset>
+        <frameName>imu_link</frameName>
+        <initialOrientationAsReference>false</initialOrientationAsReference>
+      </plugin>
+      <pose>0 0 0 0 0 0</pose>
+    </sensor>
+  </gazebo>
+
+
+
+
+</robot>
+
+
+
+================================================
+File: urdf/ashwini.xacro
+================================================
+<?xml version="1.0"?>
+
+<robot name="ashwini" xmlns:xacro="ashwini_description_xacro_namespace">
+  <!-- Dummy root link without inertia -->
+  <!-- base_footprint is a virtual frame at the ground contact point -->
+  <link name="base_footprint" />
+
+  <joint name="base_footprint_joint" type="fixed">
+    <parent link="base_footprint" />
+    <child link="base_link" />
+    <!-- Adjust Z as needed (e.g., half the wheel radius or chassis height) -->
+    <origin xyz="0 0 0.216" rpy="0 0 0" />
+  </joint>
+
+
+  <!-- <xacro:include filename="$(find ashwini)/urdf/ashwini.gazebo" /> -->
+  <xacro:property name="camera_mass" value="0.1"/>
+	<xacro:property name="hokoyu_mass" value="1e-5"/>
+
+  <xacro:property name="base_link_length_width_height" value="0.650 0.381 0.132" />
+  <xacro:property name="base_link_length" value="0.650" />
+  <xacro:property name="base_link_width" value="0.381" />
+  <xacro:property name="base_link_height" value="0.132" />
+  <xacro:property name="base_link_mass" value="20"/> <!--25 kg-->
+  
+  <xacro:property name="drive_wheel_length" value="0.049" />
+  <xacro:property name="drive_wheel_radius" value="0.181" />
+  <xacro:property name="drive_wheel_mass" value="2"/> <!--2 kg-->
+
+  <xacro:property name="castor_mount_link_length_width_height" value="0.1145 0.10 0.0057" />
+  <xacro:property name="castor_mount_link_length" value="0.1145" />
+  <xacro:property name="castor_mount_link_width" value="0.10" />
+  <xacro:property name="castor_mount_link_height" value="0.0057" />
+  <xacro:property name="castor_mount_link_mass" value="0.25"/> <!--0.25 kg-->
+
+  <xacro:property name="castor_mount_dummy_link_length" value="0.02" />
+  <xacro:property name="castor_mount_dummy_link_width" value="0.02" />
+  <xacro:property name="castor_mount_dummy_link_height" value="0.02" />
+  <xacro:property name="castor_mount_dummy_link_mass" value="1.5"/> <!--0.25 kg-->
+
+  <xacro:property name="castor_wheel_length" value="0.049" />
+  <xacro:property name="castor_wheel_radius" value="0.07925" />
+  <xacro:property name="castor_wheel_mass" value="2"/> <!--2 kg-->
+
+  <xacro:property name="friction_val" value="0.15"/>
+
+  <xacro:macro name="box_link" params="link_name length width height mass *origin">
+    <link name="${link_name}_link">
+      <!--If you do not explicitly specify a <collision> element. Gazebo will 
+      treat your link as "invisible" to laser scanners and collision checking-->
+      <collision>
+        <geometry>
+          <box size="${length} ${width} ${height}"/>
+        </geometry>
+        <!-- line below allows us to insert:<origin rpy="${rpy}" xyz="${xyz}"/>-->
+        <xacro:insert_block name="origin" />
+      </collision>
+      
+      <visual>
+        <geometry>
+          <!--box dimensions is Meters. L X W X H where the L X H is a ractange, 
+              and the H extrudes it upwards -->
+          <box size="${length} ${width} ${height}"/>
+        </geometry>
+        <!-- line below allows us to insert:<origin rpy="${rpy}" xyz="${xyz}"/>-->
+        <xacro:insert_block name="origin" />
+      </visual>
+      
+      
+      <inertial>
+        <!-- line below allows us to insert:<origin rpy="${rpy}" xyz="${xyz}"/>-->
+        <xacro:insert_block name="origin" />
+        <!--all blocks now need a 'mass' argument-->
+        <mass value="${mass}"/>
+        <!--This is the 3x3 inertial matrix. See: https://wiki.ros.org/urdf/XML/link -->
+        <!--where x=length; y=width; z=height. these lines of code came from 
+        Emiliano Borghi's project-->
+        <inertia
+          ixx="${mass*(width*width+height*height)/12}" 
+          ixy = "0" 
+          ixz = "0"
+          iyy="${mass*(length*length+height*height)/12}" 
+          iyz = "0"
+          izz="${mass*(length*length+height*height)/12}"/>
+        </inertial>      
+      
+    </link>
+  </xacro:macro>
+
+  <xacro:macro name="cylinder_link" params="link_name length radius mass *origin">
+    <link name="${link_name}_link">
+      <!--If you do not explicitly specify a <collision> element. Gazebo will 
+      treat your link as "invisible" to laser scanners and collision checking-->
+      <collision>
+        <geometry>
+          <cylinder length="${length}" radius="${radius}"/>
+        </geometry>
+        <xacro:insert_block name="origin" />
+      </collision>
+
+      <visual>
+        <geometry>
+          <cylinder length="${length}" radius="${radius}"/>
+        </geometry>
+          <!-- roll pitch and yaw will move the item in 3D space to arrange it how
+               we want it in relation to the origin. the XYZ is to move it around
+             the 3D space relative to the origin. Note that 1.57075 is pi/2 -->
+        <xacro:insert_block name="origin" />
+        
+      </visual>
+      
+      <!--TODO-->
+      <inertial>
+        <!-- line below allows us to insert:<origin rpy="${rpy}" xyz="${xyz}"/>-->
+        <xacro:insert_block name="origin" />
+        <!--all blocks now need a 'mass' argument-->
+        <mass value="${mass}"/>
+        
+        <!--This is the 3x3 inertial matrix. See: https://wiki.ros.org/urdf/XML/link -->
+        <inertia
+          ixx="${mass*(3*radius*radius+length*length)/12}" 
+    	  ixy = "0" 
+    	  ixz = "0"
+    	  iyy="${mass*(3*radius*radius+length*length)/12}" 
+    	  iyz = "0"
+    	  izz="${mass*radius*radius/2}"
+        />
+      </inertial>
+
+    </link>
+  </xacro:macro>
+
+  <xacro:macro name="continuous_joint" params="name rpy xyz parent child friction *origin">
+    <joint name="${name}_joint" type="continuous">
+      <axis rpy="${rpy}" xyz="${xyz}"/>
+      <parent link="${parent}_link"/>
+      <child link="${child}_link"/>
+      <!-- this is the point at which the two parts attach to one another    -->
+      <xacro:insert_block name="origin" />
+      <!--This introduces friction so that continious joints don't spin indefinitly
+      damping is only used in Gazebo4 and earlier.... -->
+      <dynamics damping="0.0" friction="${friction}"/> 
+    </joint>
+  </xacro:macro>
+
+  <xacro:macro name="fixed_joint" params="name parent child *origin">
+    <joint name="${name}_joint" type="fixed">
+      <parent link="${parent}_link"/>
+      <child link="${child}_link"/>
+      <!-- this is the point at which the two parts attach to one another    -->
+      <xacro:insert_block name="origin" />
+    </joint>
+  </xacro:macro>
+
+  <xacro:box_link link_name="base" length="${base_link_length}"
+                                   width="${base_link_width}"
+                                   height="${base_link_height}"  mass="${base_link_mass}">
+    <!--origin rpy="0 0 0" xyz="-0.325 -0.1905 0.066"/-->
+    <origin rpy="0 0 0" xyz="-0.325 -0.1905 0.066"/>
+  </xacro:box_link>
+
+  <xacro:cylinder_link link_name="left_drive_wheel" length="${drive_wheel_length}" radius="${drive_wheel_radius}"  mass="${drive_wheel_mass}"> 
+    <origin xyz="0 0 0" rpy="${pi/2} 0 0"/> 
+  </xacro:cylinder_link>
+
+  <!--        -->
+  <xacro:continuous_joint name="base_to_left_drive_wheel" rpy="0 0 0" xyz="0 1 0" parent="base" child="left_drive_wheel" 
+                          friction="${friction_val}">
+    <origin xyz="-0.05 0.037 -0.035"/>
+  </xacro:continuous_joint>
+
+  <!--right_drive_wheel_link is a well named link :-) -->
+  <xacro:cylinder_link link_name="right_drive_wheel" length="${drive_wheel_length}" radius="${drive_wheel_radius}"  mass="${drive_wheel_mass}"> 
+    <origin xyz="0 0 0" rpy="${pi/2} 0 0"/> 
+  </xacro:cylinder_link>
+
+  <!--        -->
+  <xacro:continuous_joint name="base_to_right_drive_wheel" rpy="0 0 0" xyz="0 1 0" parent="base" child="right_drive_wheel"
+                          friction="${friction_val}">
+    <origin xyz="-0.05 -0.421 -0.035"/>
+  </xacro:continuous_joint>
+
+  <!--+++++++++++++++++++++++++++++++++++LEFT CASTOR+++++++++++++++++++++++++++++++++++++++++++++++++++-->
+  <!--left_caster_mount -->
+  <xacro:box_link link_name="left_castor_mount" length="${castor_mount_link_length}" 
+                                                width="${castor_mount_link_width}" 
+                                                height="${castor_mount_link_height}" 
+                                                mass="${castor_mount_link_mass}">  
+    <origin xyz="0 0 0" rpy="0 0 0" /> 
+  </xacro:box_link>
+
+   <!--joint-->
+  <xacro:fixed_joint name="base_to_left_castor_mount" parent="base" child="left_castor_mount">
+    <origin xyz="-0.52835 -0.041 -0.03265"/>
+  </xacro:fixed_joint>
+
+
+  <!--left_caster_dummy to give the castor wheel rotation about the Z axis -->
+  <xacro:box_link link_name="left_castor_dummy" length="${castor_mount_dummy_link_length}" 
+                                                width="${castor_mount_dummy_link_width}" 
+                                                height="${castor_mount_dummy_link_height}" 
+                                                mass="${castor_mount_dummy_link_mass}">  
+    <origin xyz="0 0 0" rpy="0 0 0" /> 
+  </xacro:box_link>
+
+  <!--joint between left castor mount and dummy link to allow rotation of castor wheel about z axis-->
+  <xacro:continuous_joint name="left_castor_mount_to_left_castor_dummy" rpy="0 0 0" xyz="0 0 1" 
+                          parent="left_castor_mount" child="left_castor_dummy" friction="${friction_val}">
+    <origin xyz="0.0 0.0 -0.01"/>
+  </xacro:continuous_joint>
+
+  <!--left_castor_wheel_link is a well named link :-) -->
+  <xacro:cylinder_link link_name="left_castor_wheel" length="${castor_wheel_length}" radius="${castor_wheel_radius}"  mass="${castor_wheel_mass}"> 
+    <origin xyz="0 0 0" rpy="${pi/2} 0 0"/> 
+  </xacro:cylinder_link>
+
+  <!--        -->
+  <xacro:continuous_joint name="left_castor_dummy_to_left_castor_wheel" rpy="0 0 0" xyz="0 1 0" 
+                          parent="left_castor_dummy" child="left_castor_wheel" friction="${friction_val}">
+    <origin xyz="-0.037 0.0 -0.10785"/>
+  </xacro:continuous_joint>
+
+  <!--+++++++++++++++++++++++++++++++++++RIGHT CASTOR+++++++++++++++++++++++++++++++++++++++++++++++++++-->
+
+
+  <!--right_caster_plate_link is a well named link :-) -->
+  <xacro:box_link link_name="right_castor_mount" length="${castor_mount_link_length}" 
+                                                 width="${castor_mount_link_width}"
+                                                 height="${castor_mount_link_height}" 
+                                                 mass="${castor_mount_link_mass}">  
+    <origin xyz="0 0 0" rpy="0 0 0" /> 
+  </xacro:box_link>
+
+   <!--        -->
+  <xacro:fixed_joint name="base_to_right_castor_mount" parent="base" child="right_castor_mount">
+    <origin xyz="-0.52835 -0.344 -0.03265"/>
+  </xacro:fixed_joint>
+
+  <!--right_caster_dummy to give the castor wheel rotation about the Z axis -->
+  <xacro:box_link link_name="right_castor_dummy" length="${castor_mount_dummy_link_length}" 
+                                                 width="${castor_mount_dummy_link_width}" 
+                                                 height="${castor_mount_dummy_link_height}" 
+                                                 mass="${castor_mount_dummy_link_mass}">  
+    <origin xyz="0 0 0" rpy="0 0 0" /> 
+  </xacro:box_link>
+
+  <!--joint between right castor mount and dummy link to allow rotation of castor wheel about z axis-->
+  <xacro:continuous_joint name="right_castor_mount_to_right_castor_dummy" rpy="0 0 0" xyz="0 0 1" 
+                          parent="right_castor_mount" child="right_castor_dummy" friction="${friction_val}">
+    <origin xyz="0.0 0.0  -0.01"/>
+  </xacro:continuous_joint>
+
+
+  <!--right_castor_wheel_link is a well named link :-) -->
+  <xacro:cylinder_link link_name="right_castor_wheel" length="${castor_wheel_length}" radius="${castor_wheel_radius}"
+                        mass="${castor_wheel_mass}"> 
+    <origin xyz="0 0 0" rpy="${pi/2} 0 0"/> 
+  </xacro:cylinder_link>
+
+  <!--        -->
+  <xacro:continuous_joint name="right_castor_dummy_to_right_castor_wheel" rpy="0 0 0" xyz="0 1 0" 
+                          parent="right_castor_dummy" child="right_castor_wheel" friction="${friction_val}">
+    <origin xyz="-0.037 0 -0.10785"/>
+  </xacro:continuous_joint>
+
+  <link name="camera">
+    <inertial>
+      <mass value="${camera_mass}"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia
+        ixx="1e-6" ixy="0.0" ixz="0.0"
+        iyy="1e-6" iyz="0.0"
+        izz="1e-6"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <box size="0.05 0.05 0.05"/>
+      </geometry>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.05 0.05 0.05"/>
+      </geometry>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </collision>
+  </link>
+
+  <joint name="camera_joint" type="fixed">
+		<origin xyz="0.006 -0.2 0.4" rpy="0 0.2 0" />
+		<parent link="base_link"/>
+		<child link="camera" />
+		<axis xyz="0 1 0"/>
+	</joint>
+
+  <link name="hokuyo">
+		<inertial>
+			<mass value="${hokoyu_mass}"/>
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+
+			<inertia
+		        ixx="1e-6" ixy="0.0" ixz="0.0"
+		        iyy="1e-6" iyz="0.0"
+		        izz="1e-6"
+		      />
+		</inertial>
+
+		<visual>
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+			<geometry>
+				<mesh filename="package://ashwini/meshes/hokuyo.dae"/>
+			</geometry>
+		</visual>
+
+		<collision>
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+			<geometry>
+				<box size="0.1 0.1 0.1"/>
+			</geometry>
+		</collision>
+	</link>
+
+  
+	<!-- Hokoyu Joint -->
+	<joint name="hokuyo_joint" type="fixed">
+	    <origin xyz="0.001 -0.2 0.2" rpy="0 0 3.1415592653589793238" />
+	    <parent link="base_link"/>
+	    <child link="hokuyo" />  
+	    <axis xyz="0 1 0"/> 
+	</joint>
+
+
+
+    <!-- IMU Sensor -->
+  <link name="imu_link">
+    <inertial>
+      <mass value="0.05"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="0.0001" ixy="0.0" ixz="0.0"
+               iyy="0.0001" iyz="0.0"
+               izz="0.0001"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <box size="0.05 0.05 0.02"/>
+      </geometry>
+      <material name="Blue">
+        <color rgba="0.0 0.0 1.0 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.05 0.05 0.02"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- IMU Joint (Attach to Base Link) -->
+  <joint name="imu_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="imu_link"/>
+    <origin xyz="-0.2 -0.2 0.144" rpy="0 0 0"/>
+  </joint>
+
+  <link name="odom"/>
+  <joint name="odom_to_base" type="fixed">
+    <parent link="odom"/>
+    <child link="base_footprint"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+
+</robot>
+
+
+
+================================================
+File: worlds/empty.world
+================================================
+<?xml version="1.0" ?>
+<sdf version="1.4">
+  <world name="black_ground_world">
+    
+    <!-- Custom black ground -->
+    <model name="black_ground">
+      <static>true</static>
+      <link name="ground_link">
+        <collision name="ground_collision">
+          <geometry>
+            <plane>
+              <size>50 50</size>
+            </plane>
+          </geometry>
+        </collision>
+        <visual name="ground_visual">
+          <geometry>
+            <plane>
+              <size>50 50</size>
+            </plane>
+          </geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Black</name>
+            </script>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+        Central obstacle cluster
+    <!-- <model name="obstacle_center">
+      <static>true</static>
+      <pose>2.0 0 0.25 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>0.5 0.5 0.5</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.5 0.5 0.5</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>1 0 0 1</ambient>
+            <diffuse>1 0 0 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model> -->
+
+    <!-- Left side obstacles -->
+    <!-- <model name="obstacle_left_1">
+      <static>true</static>
+      <pose>1.0 2 0.25 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>0.4 0.4 0.5</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.4 0.4 0.5</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0 1 0 1</ambient>
+            <diffuse>0 1 0 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model> -->
+
+    <!-- <model name="obstacle_left_2">
+      <static>true</static>
+      <pose>3.0 1.5 0.25 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>0.3 0.6 0.5</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.3 0.6 0.5</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0 0 1 1</ambient>
+            <diffuse>0 0 1 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model> -->
+
+    <!-- Right side obstacles -->
+    <!-- <model name="obstacle_right_1">
+      <static>true</static>
+      <pose>1.5 -1.0 0.25 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>0.6 0.3 0.5</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.6 0.3 0.5</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>1 1 0 1</ambient>
+            <diffuse>1 1 0 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model> -->
+
+    <!-- <model name="obstacle_right_2">
+      <static>true</static>
+      <pose>3.5 -1.3 0.25 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>0.5 0.5 0.5</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.5 0.5 0.5</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>1 0 1 1</ambient>
+            <diffuse>1 0 1 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model> -->
+
+    <!-- Narrow passage -->
+    <!-- <model name="obstacle_gate_1">
+      <static>true</static>
+      <pose>5.0 0.5 0.25 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>0.3 0.3 0.5</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.3 0.3 0.5</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0 1 1 1</ambient>
+            <diffuse>0 1 1 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model> -->
+
+    <!-- <model name="obstacle_gate_2">
+      <static>true</static>
+      <pose>5.0 -0.5 0.25 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>0.3 0.3 0.5</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.3 0.3 0.5</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0 1 1 1</ambient>
+            <diffuse>0 1 1 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model> -->
+
+    <!-- Light source -->
+    <include>
+      <uri>model://sun</uri>
+    </include>
+
+    <!-- World camera -->
+    <gui fullscreen='0'>
+      <camera name='world_camera'>
+        <pose>4.927360 -4.376610 3.740080 0.000000 0.275643 2.356190</pose>
+        <view_controller>orbit</view_controller>
+      </camera>
+    </gui>
+  </world>
+</sdf>
+
+

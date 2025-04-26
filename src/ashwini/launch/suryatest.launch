@@ -1,0 +1,31 @@
+<launch>
+
+	<arg name="robot_name" default="ashwini"/>
+
+	<include file="$(find ashwini)/launch/robot_description.launch"/>
+	<include file="$(find ashwini)/launch/move_base.launch"/>
+
+	<node name="rviz" pkg="rviz" type="rviz" respawn="false"
+		args="-d $(find ashwini)/rviz/real.rviz"/>
+
+	<node pkg="rplidar_ros" type="rplidarNode" name="rplidarNode" output="screen">
+		<param name="serial_port" value="/dev/ttyUSB0"/>
+		<param name="serial_baudrate" value="256000"/>
+		<param name="frame_id" value="hokuyo"/>
+		<param name="angle_compensate" type="bool" value="true"/>
+    </node>
+
+	<!-- <rosparam command="load" file="$(find ashwini)/config/rplidar_filter.yaml" /> -->
+	<!-- <node pkg="laser_filters" type="scan_to_scan_filter_chain" name="scan_filter" /> -->
+
+	<node pkg="robot_localization" type="ekf_localization_node" name="ekf_filter_node" output="screen">
+		<rosparam file="$(find ashwini)/config/ekf.yaml" command="load" />
+	</node>
+
+	<node pkg="ashwini" type="imu.py" name="imu_node" output="screen"/>
+
+	<!-- <node pkg="ashwini" type="camera_publisher.py" name="camera_node" output="screen"/> -->
+
+  <node pkg="ashwini" type="motor_serial.py" name="tungtungtungsahur" output="screen"/>
+
+</launch>

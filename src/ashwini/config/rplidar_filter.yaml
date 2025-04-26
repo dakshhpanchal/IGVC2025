@@ -1,0 +1,12 @@
+scan_filter_chain:
+  - name: angle_filter
+    type: laser_filters/ScanAngleFilter
+    params:
+      lower_angle: -1.5708  # -90 degrees
+      upper_angle: 1.5708   # 90 degrees
+
+  - name: range_filter
+    type: laser_filters/ScanRangeFilter
+    params:
+      lower_threshold: 3.0
+      upper_threshold: 7.5

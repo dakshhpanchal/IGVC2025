@@ -3,7 +3,8 @@ TrajectoryPlannerROS:
   min_vel_x: 0.5
   max_vel_theta: 0.35
   min_vel_theta: -0.35
-  min_in_place_vel_theta: 0.25
+  min_in_place_vel_theta: 0
+  escape_vel: -0.1             # ← allow moving backward if really stuck
 
   acc_lim_theta: 0.25
   acc_lim_X: 2.5
@@ -14,4 +15,4 @@ TrajectoryPlannerROS:
 
   xy_goal_tolerance: 0.5
   yaw_goal_tolerance: 1
-  
+    
