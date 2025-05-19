@@ -3,12 +3,10 @@
 <robot name="ashwini" xmlns:xacro="ashwini_description_xacro_namespace">
   <!-- Dummy root link without inertia -->
 
-  <xacro:include filename="$(find ashwini)/urdf/ashwini.gazebo" />
+  <!-- <xacro:include filename="$(find ashwini)/urdf/ashwini.gazebo" /> -->
 
-  <xacro:property name="pi" value="3.1415926535897931" />
+  <!-- <xacro:property name="pi" value="3.1415926535897931" /> -->
 
-
-  <xacro:property name="camera_mass" value="0.1"/>
 	<xacro:property name="hokoyu_mass" value="1e-5"/>
 
 
@@ -220,7 +218,7 @@
 
   <!--right_caster_plate_link is a well named link :-) -->
   <xacro:box_link link_name="right_castor_mount" length="${castor_mount_link_length}" 
-                                                 width="${castor_mount_link_width}"
+                                                 width ="${castor_mount_link_width}"
                                                  height="${castor_mount_link_height}" 
                                                  mass="${castor_mount_link_mass}">  
     <origin xyz="0 0 0" rpy="0 0 0" /> 
@@ -258,32 +256,6 @@
     <origin xyz="-0.037 0 -0.10785"/>
   </xacro:continuous_joint>
 
-  <link name="camera">
-		<inertial>
-			<mass value="${camera_mass}"/>
-			<origin xyz="0 0 0" rpy="0 0 0"/>
-			<inertia
-		        ixx="1e-6" ixy="0.0" ixz="0.0"
-		        iyy="1e-6" iyz="0.0"
-		        izz="1e-6"
-		      />
-		</inertial>
-
-		<visual>
-			<origin xyz="0 0 0" rpy="0 0 0"/>
-			<geometry>
-				<box size="0.05 0.05 0.05"/>
-			</geometry>
-		</visual>
-
-		<collision>
-			<origin xyz="0 0 0" rpy="0 0 0"/>
-			<geometry>
-				<box size="0.05 0.05 0.05"/>
-			</geometry>
-		</collision>
-	</link>
-
   <link name="hokuyo">
 		<inertial>
 			<mass value="${hokoyu_mass}"/>
@@ -310,54 +282,30 @@
 			</geometry>
 		</collision>
 	</link>
-
-  <joint name="camera_joint" type="fixed">
-		<origin xyz="0.006 -0.2 0.4" rpy="0 0.2 0" />
-		<parent link="base_link"/>
-		<child link="camera" />
-		<axis xyz="0 1 0"/>
-	</joint>
-
+		
 	<!-- Hokoyu Joint -->
 	<joint name="hokuyo_joint" type="fixed">
-	    <origin xyz="0.001 -0.2 0.2" rpy="0 0 0" />
+	    <origin xyz="0.001 -0.2 0.2" rpy="0 3.14 0" />
 	    <parent link="base_link"/>
 	    <child link="hokuyo" />  
 	    <axis xyz="0 1 0"/> 
 	</joint>
+  
+  <!-- Add this to your robot's URDF -->
+  <xacro:include filename="$(find realsense2_description)/urdf/_d455.urdf.xacro"/>
+  <!-- <xacro:include filename="$(find realsense2_description)/urdf/_d455.gazebo.xacro"/> -->
 
+  <xacro:sensor_d455 name="camera" parent="base_link">
+      <origin xyz="0.2 0 0.3" rpy="0 0 0"/>  <!-- Adjust position as needed -->
+  </xacro:sensor_d455>
 
-
-    <!-- IMU Sensor -->
-  <link name="imu_link">
-    <inertial>
-      <mass value="0.05"/>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <inertia ixx="0.0001" ixy="0.0" ixz="0.0"
-               iyy="0.0001" iyz="0.0"
-               izz="0.0001"/>
-    </inertial>
-    <visual>
-      <geometry>
-        <box size="0.05 0.05 0.02"/>
-      </geometry>
-      <material name="Blue">
-        <color rgba="0.0 0.0 1.0 1.0"/>
-      </material>
-    </visual>
-    <collision>
-      <geometry>
-        <box size="0.05 0.05 0.02"/>
-      </geometry>
-    </collision>
-  </link>
-
-  <!-- IMU Joint (Attach to Base Link) -->
-  <joint name="imu_joint" type="fixed">
+  <!-- <link name="camera_imu_optical_frame"/>
+d
+  <joint name="camera_imu_optical_joint" type="fixed">
     <parent link="base_link"/>
-    <child link="imu_link"/>
-    <origin xyz="-0.2 -0.2 0.144" rpy="0 0 0"/>
-  </joint>
-
+    <child link="camera_imu_optical_frame"/>
+    <origin xyz="0.15 0 0.10" rpy="1.5708 0 1.5708"/>
+    <axis xyz="0 0 1" rpy="0 0 0"/>
+</joint> -->
 
 </robot>

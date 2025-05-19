@@ -10,3 +10,5 @@ local_costmap:
   origin_y: -1.5
   resolution: 0.1
   inflation_radius: 0.6
+
+  
