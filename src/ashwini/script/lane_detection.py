@@ -65,8 +65,8 @@ class LaneDetector:
             rospy.logwarn("Did not find two lane lines")
 
         # Show for debug
-        # cv2.imshow("Lane ROI", roi)
-        # cv2.imshow("Mask", mask)
+        cv2.imshow("Lane ROI", roi)
+        cv2.imshow("Mask", mask)
         cv2.waitKey(1)
 
     def run(self):

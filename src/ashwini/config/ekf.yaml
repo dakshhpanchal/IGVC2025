@@ -1,0 +1,19 @@
+ekf_node:
+  frequency: 30
+  sensor_timeout: 0.1
+  two_d_mode: true
+  publish_tf: true
+  map_frame: map
+  odom_frame: odom
+  base_link_frame: base_link
+  world_frame: odom
+
+  imu0: /imu
+  imu0_config: [false, false, false,  # x, y, z pos
+                false, false, false,  # x, y, z vel
+                false, false, true,   # x, y, z ori
+                false, false, true]   # x, y, z ang vel
+  imu0_differential: false
+  imu0_remove_gravitational_acceleration: true
+
+  use_control: false
