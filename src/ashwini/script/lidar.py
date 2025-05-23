@@ -5,8 +5,8 @@ from sensor_msgs.msg import LaserScan
 import math
 
 class Lidar:
-    def init(self):
-        rospy.init_node('lidar')
+    def __init__(self):
+        rospy.init_node('lidar1')
 
         self.pub = rospy.Publisher('/lidar', LaserScan, queue_size=1)
         rospy.Subscriber('/scan', LaserScan, self.scan_callback)
@@ -43,7 +43,7 @@ class Lidar:
 
         self.pub.publish(filtered_scan)
 
-if name == 'main':
+if __name__ == '__main__':
     try:
         Lidar()
         rospy.spin()

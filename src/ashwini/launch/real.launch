@@ -26,16 +26,17 @@
 		<param name="frame_id" value="hokuyo"/>
 		<param name="angle_compensate" type="bool" value="true"/>
     </node>
-
-	<!-- Laser Filters -->
-	<rosparam command="load" file="$(find ashwini)/config/laser_filter.yaml" />
-	<node pkg="laser_filters" type="scan_to_scan_filter_chain" name="scan_filter" />
+	<node pkg="ashwini" type="lidar.py" name="lidar_correct" output="screen"/>
 
 	<!-- EKF for sensor fusion -->
 	<node pkg="robot_localization" type="ekf_localization_node" name="ekf_filter_node" output="screen">
 		<rosparam file="$(find ashwini)/config/ekf.yaml" command="load" />
 	</node>
 
+	<!-- IMU -->
 	<node pkg="ashwini" type="correct_imu.py" name="imu_correct" output="screen"/>
 	<node pkg="ashwini" type="publish_imu.py" name="imu_node" output="screen"/>
+
+	<node pkg="ashwini" type="teleop.py" name="teleop_node" output="screen"/>
+
 </launch>
