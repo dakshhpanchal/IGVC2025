@@ -5,8 +5,8 @@ from geometry_msgs.msg import Twist
 import serial
 
 # Parameters for conversion
-MAX_PWM = 254
-MAX_LINEAR_VEL = 1  # m/s
+MAX_PWM = 255
+MAX_LINEAR_VEL = 1    # m/s
 MAX_ANGULAR_VEL = 1.0  # rad/s
 WHEEL_DISTANCE = 0.65  # distance between wheels (meters)
  
