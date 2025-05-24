@@ -37,6 +37,6 @@
 	<node pkg="ashwini" type="correct_imu.py" name="imu_correct" output="screen"/>
 	<node pkg="ashwini" type="publish_imu.py" name="imu_node" output="screen"/>
 
-	<node pkg="ashwini" type="teleop.py" name="teleop_node" output="screen"/>
+	<!-- <node pkg="ashwini" type="teleop.py" name="teleop_node" output="screen"/> -->
 
 </launch>
