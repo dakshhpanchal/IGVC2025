@@ -16,6 +16,10 @@
   <build_depend>sensor_msgs</build_depend>
   <build_depend>opencv2</build_depend>
   <build_depend>cv_bridge</build_depend>
+  <build_depend>tf2_ros</build_depend>
+  <build_depend>tf2_geometry_msgs</build_depend>
+  <build_depend>nav_msgs</build_depend>
+  <build_depend>pcl_ros</build_depend>
   
 
   <build_export_depend>roscpp</build_export_depend>
@@ -24,6 +28,10 @@
   <build_export_depend>sensor_msgs</build_export_depend>
   <build_export_depend>opencv2</build_export_depend>
   <build_export_depend>cv_bridge</build_export_depend>
+  <build_export_depend>tf2_ros</build_export_depend>
+  <build_export_depend>tf2_geometry_msgs</build_export_depend>
+  <build_export_depend>nav_msgs</build_export_depend>
+  <build_export_depend>pcl_ros</build_export_depend>
   
   <depend>geometry_msgs</depend>
   <exec_depend>message_runtime</exec_depend>
@@ -33,5 +41,10 @@
   <exec_depend>sensor_msgs</exec_depend>
   <exec_depend>opencv2</exec_depend>
   <exec_depend>cv_bridge</exec_depend>
+  <exec_depend>tf2_ros</exec_depend>
+  <exec_depend>tf2_geometry_msgs</exec_depend>
+  <exec_depend>nav_msgs</exec_depend>
+  <exec_depend>pcl_ros</exec_depend>
+  <exec_depend>image_view</exec_depend>
 
 </package>
