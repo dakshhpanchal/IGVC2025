@@ -34,6 +34,9 @@ class LaneDetectionNode:
         self.max_detection_distance = rospy.get_param('~max_distance', 10.0)  # Max detection distance
         self.min_detection_distance = rospy.get_param('~min_distance', 1.0)
         
+        # Enable/disable yellow lane detection
+        self.enable_yellow_detection = rospy.get_param('~enable_yellow_detection', True)
+        
         # HSV parameters - same as test script defaults
         # Fix: Read individual HSV components and construct arrays
         white_lower_h = rospy.get_param('~white_lower_h', 0)
@@ -72,8 +75,12 @@ class LaneDetectionNode:
         self.last_process_time = rospy.Time.now()
         
         rospy.loginfo("Lane Detection Node initialized")
+        rospy.loginfo(f"Yellow detection: {'ENABLED' if self.enable_yellow_detection else 'DISABLED'}")
         rospy.loginfo(f"White HSV range: {self.white_lower} - {self.white_upper}")
-        rospy.loginfo(f"Yellow HSV range: {self.yellow_lower} - {self.yellow_upper}")
+        if self.enable_yellow_detection:
+            rospy.loginfo(f"Yellow HSV range: {self.yellow_lower} - {self.yellow_upper}")
+        else:
+            rospy.loginfo("Yellow HSV range: DISABLED")
     
     def camera_info_callback(self, msg):
         """Store camera intrinsics for pixel-to-3D conversion"""
@@ -103,8 +110,8 @@ class LaneDetectionNode:
         """Process lane detection if both color and depth are available"""
         current_time = rospy.Time.now()
         
-        # Throttle processing to 10 Hz
-        if (current_time - self.last_process_time).to_sec() < 0.1:
+        # Throttle processing to 5 Hz for better performance
+        if (current_time - self.last_process_time).to_sec() < 0.2:
             return
             
         if (self.latest_color is not None and 
@@ -119,12 +126,17 @@ class LaneDetectionNode:
         # Convert to HSV for better color filtering
         hsv = cv2.cvtColor(color_image, cv2.COLOR_BGR2HSV)
         
-        # Create mask for white and yellow lane markings
+        # Create mask for white lane markings
         white_mask = cv2.inRange(hsv, self.white_lower, self.white_upper)
-        yellow_mask = cv2.inRange(hsv, self.yellow_lower, self.yellow_upper)
         
-        # Combine masks
-        lane_mask = cv2.bitwise_or(white_mask, yellow_mask)
+        # Create mask for yellow lane markings (if enabled)
+        if self.enable_yellow_detection:
+            yellow_mask = cv2.inRange(hsv, self.yellow_lower, self.yellow_upper)
+            # Combine masks
+            lane_mask = cv2.bitwise_or(white_mask, yellow_mask)
+        else:
+            yellow_mask = np.zeros_like(white_mask)  # Empty mask for consistency
+            lane_mask = white_mask.copy()
         
         # Apply Gaussian blur to reduce noise
         lane_mask = cv2.GaussianBlur(lane_mask, (5, 5), 0)
@@ -189,6 +201,8 @@ class LaneDetectionNode:
     def process_lane_detection(self):
         """Main processing function for lane detection"""
         try:
+            start_time = rospy.Time.now()
+            
             # Convert ROS images to OpenCV format
             color_image = self.bridge.imgmsg_to_cv2(self.latest_color, "bgr8")
             depth_image = self.bridge.imgmsg_to_cv2(self.latest_depth, "16UC1")
@@ -239,7 +253,7 @@ class LaneDetectionNode:
             # Log detection stats
             rospy.logdebug(f"Detected {len(lane_points_3d)} lane points, "
                           f"White pixels: {np.sum(white_mask > 0)}, "
-                          f"Yellow pixels: {np.sum(yellow_mask > 0)}, "
+                          f"Yellow pixels: {np.sum(yellow_mask > 0) if self.enable_yellow_detection else 'DISABLED'}, "
                           f"Total lane pixels: {np.sum(lane_mask > 0)}")
             
         except Exception as e:
@@ -346,8 +360,12 @@ class LaneDetectionNode:
         cv2.putText(overlay, f"White pixels: {np.sum(white_mask > 0)}", 
                    (10, y_offset), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
         y_offset += 25
-        cv2.putText(overlay, f"Yellow pixels: {np.sum(yellow_mask > 0)}", 
-                   (10, y_offset), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
+        if self.enable_yellow_detection:
+            cv2.putText(overlay, f"Yellow pixels: {np.sum(yellow_mask > 0)}", 
+                       (10, y_offset), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
+        else:
+            cv2.putText(overlay, f"Yellow pixels: DISABLED", 
+                       (10, y_offset), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (128, 128, 128), 2)
         y_offset += 25
         cv2.putText(overlay, f"Total lane pixels: {np.sum(lane_mask > 0)}", 
                    (10, y_offset), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
@@ -360,8 +378,12 @@ class LaneDetectionNode:
         cv2.putText(overlay, f"White HSV: {self.white_lower} - {self.white_upper}", 
                    (10, y_offset), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (200, 200, 200), 1)
         y_offset += 20
-        cv2.putText(overlay, f"Yellow HSV: {self.yellow_lower} - {self.yellow_upper}", 
-                   (10, y_offset), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (200, 200, 200), 1)
+        if self.enable_yellow_detection:
+            cv2.putText(overlay, f"Yellow HSV: {self.yellow_lower} - {self.yellow_upper}", 
+                       (10, y_offset), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (200, 200, 200), 1)
+        else:
+            cv2.putText(overlay, f"Yellow HSV: DISABLED", 
+                       (10, y_offset), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (128, 128, 128), 1)
         
         # Convert back to ROS message
         try:
