@@ -1,7 +1,7 @@
 #define DIR1 4
 #define PWM1 5
-#define DIR2 7
-#define PWM2 6
+#define DIR2 6
+#define PWM2 7
 
 void setup() {
   pinMode(DIR1, OUTPUT);
