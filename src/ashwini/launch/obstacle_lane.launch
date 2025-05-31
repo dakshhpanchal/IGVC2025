@@ -44,10 +44,4 @@
 	
 	<node pkg="ashwini" type="teleop.py" name="teleop_node" output="screen"/>
 
-	<node pkg="ashwini" type="gps.py" name="gps" output="screen"/>
-
-	<node pkg="ashwini" type="enter_waypoint.py" name="waypoint" output="screen"/>
-
-	<node pkg="ashwini" type="publish_goal.py" name="goal" output="screen"/>
-
 </launch>
